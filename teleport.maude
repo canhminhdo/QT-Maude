@@ -274,12 +274,14 @@ fmod QUBIT is
             ((iGates(size(NL1)) (x) P (x) iGates(size(NL2)))^+) x 
             (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x 
             M1
-    /\ Prob := simplify(M2)
+    /\ Prob := scalar(M2)
     /\ M3 := (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x M1 .
 
     --- obtaining scalar for inter product:  S . I (x) I (x) I -> S
-    op simplify : Matrix -> Scalar .
-    eq simplify(S . M) = if isIdens(M) then S else errS fi .
+    op scalar : Matrix -> Scalar .
+    eq scalar(S . M) = if isIdens(M) then S else errS fi .
+    eq scalar(M) = if isIdens(M) then 1 else errS fi .
+    eq scalar(O) = 0 .
 
     --- I (x) I (x) I ...
     op isIdens : Matrix -> Bool .
