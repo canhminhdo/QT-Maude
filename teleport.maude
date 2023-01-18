@@ -323,11 +323,12 @@ endfm
 fmod ACTION is
     pr NAT .
     sort Action .
+    op I`(_`) : Nat -> Action .
+    op X`(_`) : Nat -> Action .
+    op Z`(_`) : Nat -> Action .
     op H`(_`) : Nat -> Action .
     op CX`(_,_`) : Nat Nat -> Action .
     op M`(_`) : Nat -> Action .
-    op X`(_`) : Nat -> Action .
-    op Z`(_`) : Nat -> Action .
 endfm
 
 view Action from TRIV to ACTION is
@@ -385,13 +386,8 @@ mod CIRCUIT is
     vars B : Bool .
     vars BM : BitMap .
 
-    crl [H] : {(state: Q) (actions: (H(N) AL)) OCs}
-    => {(state: Q') (actions: AL) OCs} 
-    if Q' := (Q).H(N) .
-
-    crl [CX] : {(state: Q) (actions: (CX(N1, N2) AL)) OCs}
-    => {(state: Q') (actions: AL) OCs} 
-    if Q' := (Q).CX(N1, N2).
+    rl [I] : {(state: Q) (actions: (I(N) AL)) OCs}
+    => {(state: Q) (actions: AL) OCs} .
 
     crl [X] : {(state: Q) (actions: (X(N) AL)) OCs}
     => {(state: Q') (actions: AL) OCs} 
@@ -400,6 +396,14 @@ mod CIRCUIT is
     crl [Z] : {(state: Q) (actions: (Z(N) AL)) OCs}
     => {(state: Q') (actions: AL) OCs} 
     if Q' := (Q).Z(N) .
+
+    crl [H] : {(state: Q) (actions: (H(N) AL)) OCs}
+    => {(state: Q') (actions: AL) OCs} 
+    if Q' := (Q).H(N) .
+
+    crl [CX] : {(state: Q) (actions: (CX(N1, N2) AL)) OCs}
+    => {(state: Q') (actions: AL) OCs} 
+    if Q' := (Q).CX(N1, N2).
     
     crl [M0] : {(state: Q) (actions: (M(N) AL)) (prob: Prob) (bits: BM) OCs}
     => {(state: Q') (actions: AL) (prob: (Prob .* Prob')) (bits: insert(N, 0, BM)) OCs} 
