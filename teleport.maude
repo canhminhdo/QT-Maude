@@ -260,16 +260,16 @@ fmod QUBIT is
 
     --- measurement
     sort StateProb .
-    op {state:_, prob:_} : Qubit Scalar -> StateProb .
+    op {qstate:_, prob:_} : Qubit Scalar -> StateProb .
     op getState : StateProb -> Qubit .
     op getProb : StateProb -> Scalar .
-    eq getState({state: QS, prob: Prob}) = QS .
-    eq getProb({state: QS, prob: Prob}) = Prob .
+    eq getState({qstate: QS, prob: Prob}) = QS .
+    eq getProb({qstate: QS, prob: Prob}) = Prob .
 
     --- applying a measurement with a specific matrix at a specific position
     op _.M(_,_) : Qubit Matrix Nat -> StateProb .
     ceq ((q[NL1 N NL2]: M1) QS).M(P, N) 
-    = {state: ((q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . M3)) QS), prob: Prob}
+    = {qstate: ((q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . M3)) QS), prob: Prob}
     if M2 := ((M1)^+) x
             ((iGates(size(NL1)) (x) P (x) iGates(size(NL2)))^+) x 
             (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x 
@@ -357,10 +357,10 @@ fmod OCOMP is
     pr ACTION-LIST .
     pr BOOL .
     sort OComp .
-    op (state:_) : Qubit -> OComp [ctor] .
-    op (prob:_) :  Rat -> OComp [ctor] .
-    op (actions:_) : ActionList -> OComp [ctor] .
+    op (qstate:_) : Qubit -> OComp [ctor] .
     op (bits:_) : BitMap -> OComp [ctor] .
+    op (prob:_) :  Scalar -> OComp [ctor] .
+    op (actions:_) : ActionList -> OComp [ctor] .
     op (isEnd:_) : Bool -> OComp [ctor] .
 endfm
 
@@ -385,35 +385,35 @@ mod CIRCUIT is
     vars B : Bool .
     vars BM : BitMap .
 
-    rl [I] : {(state: Q) (actions: (I(N) AL)) OCs}
-    => {(state: Q) (actions: AL) OCs} .
+    rl [I] : {(qstate: Q) (actions: (I(N) AL)) OCs}
+    => {(qstate: Q) (actions: AL) OCs} .
 
-    crl [X] : {(state: Q) (actions: (X(N) AL)) OCs}
-    => {(state: Q') (actions: AL) OCs} 
+    crl [X] : {(qstate: Q) (actions: (X(N) AL)) OCs}
+    => {(qstate: Q') (actions: AL) OCs} 
     if Q' := (Q).X(N) .
 
-    crl [Z] : {(state: Q) (actions: (Z(N) AL)) OCs}
-    => {(state: Q') (actions: AL) OCs} 
+    crl [Z] : {(qstate: Q) (actions: (Z(N) AL)) OCs}
+    => {(qstate: Q') (actions: AL) OCs} 
     if Q' := (Q).Z(N) .
 
-    crl [H] : {(state: Q) (actions: (H(N) AL)) OCs}
-    => {(state: Q') (actions: AL) OCs} 
+    crl [H] : {(qstate: Q) (actions: (H(N) AL)) OCs}
+    => {(qstate: Q') (actions: AL) OCs} 
     if Q' := (Q).H(N) .
 
-    crl [CX] : {(state: Q) (actions: (CX(N1, N2) AL)) OCs}
-    => {(state: Q') (actions: AL) OCs} 
+    crl [CX] : {(qstate: Q) (actions: (CX(N1, N2) AL)) OCs}
+    => {(qstate: Q') (actions: AL) OCs} 
     if Q' := (Q).CX(N1, N2).
     
-    crl [M0] : {(state: Q) (actions: (M(N) AL)) (prob: Prob) (bits: BM) OCs}
-    => {(state: Q') (actions: AL) (prob: (Prob .* Prob')) (bits: insert(N, 0, BM)) OCs} 
-    if {state: Q', prob: Prob'} := (Q).M(P0, N) .
+    crl [M0] : {(qstate: Q) (actions: (M(N) AL)) (prob: Prob) (bits: BM) OCs}
+    => {(qstate: Q') (actions: AL) (prob: (Prob .* Prob')) (bits: insert(N, 0, BM)) OCs} 
+    if {qstate: Q', prob: Prob'} := (Q).M(P0, N) .
  
-    crl [M1] : {(state: Q) (actions: (M(N) AL)) (prob: Prob) (bits: BM) OCs}
-    => {(state: Q') (actions: AL) (prob: (Prob .* Prob')) (bits: insert(N, 1, BM)) OCs} 
-    if {state: Q', prob: Prob'} := (Q).M(P1, N) .
+    crl [M1] : {(qstate: Q) (actions: (M(N) AL)) (prob: Prob) (bits: BM) OCs}
+    => {(qstate: Q') (actions: AL) (prob: (Prob .* Prob')) (bits: insert(N, 1, BM)) OCs} 
+    if {qstate: Q', prob: Prob'} := (Q).M(P1, N) .
 
-    rl [cif] : {(state: Q) (bits: ((N |-> N1), BM)) (actions: ((c[N] == N2 ? AL') AL)) OCs}
-    => {(state: Q) (bits: ((N |-> N1), BM)) 
+    rl [cif] : {(qstate: Q) (bits: ((N |-> N1), BM)) (actions: ((c[N] == N2 ? AL') AL)) OCs}
+    => {(qstate: Q) (bits: ((N |-> N1), BM)) 
         (actions: ((if (N1 == N2) then AL' else nil fi) AL)) OCs} .
 
     rl [end] : {(actions: nil) (isEnd: false) OCs}
@@ -436,7 +436,7 @@ mod TELEPORT is
 
     op init : -> Config .
     eq init = {
-        (state: initState) 
+        (qstate: initState) 
         (actions: (H(1) CX(1, 2) CX(0, 1) H(0) M(0) M(1) (c[1] == 1 ? X(2)) (c[0] == 1 ? Z(2))))
         (prob: 1)
         (bits: empty)
@@ -450,12 +450,12 @@ mod TELEPORT-PREDS is
     pr TELEPORT .
     inc SATISFACTION .
     subsort Config < State .
-    op success : -> Prop .
+    op isSuccess : -> Prop .
     var OCs : Soup{OComp} .
     var PROP : Prop .
     var Q : Qubit .
     var Prob : Scalar .
-    eq {(isEnd: true) (state: Q) (prob: Prob) OCs} |= success 
+    eq {(isEnd: true) (qstate: Q) (prob: Prob) OCs} |= isSuccess 
     = qubitAt(Q, 2) == qubitAt(initState, 0) and Prob > 0 .
     eq {OCs} |= PROP = false [owise] .
 endm
@@ -464,11 +464,11 @@ mod TELEPORT-CHECK is
     inc TELEPORT-PREDS .
     inc MODEL-CHECKER .
     inc LTL-SIMPLIFIER .
-    op teleTest : -> Formula .
-    eq teleTest = True U success .
+    op correct : -> Formula .
+    eq correct = True U isSuccess .
 endm
 
 red (initState).H(1).CX(1, 2).CX(0, 1).H(0).M(P0, 0) .
-red modelCheck(init, teleTest) .
-search in TELEPORT : init =>* {(state: Q:Qubit) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}}
+red modelCheck(init, correct) .
+search in TELEPORT : init =>* {(qstate: Q:Qubit) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}}
 such that qubitAt(Q:Qubit, 2) == qubitAt(initState, 0) and P:Scalar > 0 .
