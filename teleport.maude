@@ -382,7 +382,6 @@ mod CIRCUIT is
     vars OCs : Soup{OComp} .
     vars N N1 N2 : Nat .
     vars Prob Prob' : Scalar .
-    vars SP : StateProb .
     vars B : Bool .
     vars BM : BitMap .
 
@@ -438,7 +437,7 @@ mod TELEPORT is
     op init : -> Config .
     eq init = {
         (state: initState) 
-        (actions: (H(1) CX(1, 2) CX(0, 1) H(0) M(0) M(1) (c[1] == 1 ? X(2)) (c[0] == 1 ? Z(2)) ))
+        (actions: (H(1) CX(1, 2) CX(0, 1) H(0) M(0) M(1) (c[1] == 1 ? X(2)) (c[0] == 1 ? Z(2))))
         (prob: 1)
         (bits: empty)
         (isEnd: false)
@@ -454,10 +453,10 @@ mod TELEPORT-PREDS is
     op success : -> Prop .
     var OCs : Soup{OComp} .
     var PROP : Prop .
-    var QS : Qubit .
+    var Q : Qubit .
     var Prob : Scalar .
-    eq {(isEnd: true) (state: QS) (prob: Prob) OCs} |= success 
-    = qubitAt(QS, 2) == qubitAt(initState, 0) and Prob > 0 .
+    eq {(isEnd: true) (state: Q) (prob: Prob) OCs} |= success 
+    = qubitAt(Q, 2) == qubitAt(initState, 0) and Prob > 0 .
     eq {OCs} |= PROP = false [owise] .
 endm
 
@@ -471,5 +470,5 @@ endm
 
 red (initState).H(1).CX(1, 2).CX(0, 1).H(0).M(P0, 0) .
 red modelCheck(init, teleTest) .
-search in TELEPORT : init =>* {(state: QS:Qubit) (isEnd: true) (prob: Prob:Scalar) OCs:Soup{OComp}}
-such that qubitAt(QS:Qubit, 2) == qubitAt(initState, 0) and Prob:Scalar > 0 .
+search in TELEPORT : init =>* {(state: Q:Qubit) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}}
+such that qubitAt(Q:Qubit, 2) == qubitAt(initState, 0) and P:Scalar > 0 .
