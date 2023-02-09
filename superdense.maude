@@ -1,0 +1,52 @@
+in quantum-circuits.maude
+
+mod TELEPORT is
+    pr CIRCUIT .
+
+    vars S : Scalar .
+
+    ops a b : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    op initState : -> Qubit .
+    eq initState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) .
+
+    op init : -> Config .
+    eq init = {
+        (qstate: initState)
+        (actions: (H(1) CX(1, 2) CX(0, 1) H(0) M(0) M(1) (c[1] == 1 ? X(2)) (c[0] == 1 ? Z(2))))
+        (prob: 1)
+        (bits: empty)
+        (isEnd: false)
+    } .
+endm
+
+in model-checker .
+
+mod TELEPORT-PREDS is
+    pr TELEPORT .
+    inc SATISFACTION .
+    subsort Config < State .
+    op isSuccess : -> Prop .
+    var OCs : Soup{OComp} .
+    var PROP : Prop .
+    var Q : Qubit .
+    var Prob : Scalar .
+    eq {(isEnd: true) (qstate: Q) (prob: Prob) OCs} |= isSuccess
+    = qubitAt(Q, 2) == qubitAt(initState, 0) and Prob > 0 .
+    eq {OCs} |= PROP = false [owise] .
+endm
+
+mod TELEPORT-CHECK is
+    inc TELEPORT-PREDS .
+    inc MODEL-CHECKER .
+    inc LTL-SIMPLIFIER .
+    op teleProp : -> Formula .
+    eq teleProp = True U isSuccess .
+endm
+
+red (initState).H(1).CX(1, 2).CX(0, 1).H(0).M(P0, 0) .
+red modelCheck(init, teleProp) .
+search in TELEPORT : init =>* {(qstate: Q:Qubit) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}}
+such that qubitAt(Q:Qubit, 2) == qubitAt(initState, 0) and P:Scalar > 0 .
