@@ -1,4 +1,4 @@
-in quantum-circuits.maude
+load quantum-circuits.maude
 
 mod SUPERDENSE is
     pr CIRCUIT .
@@ -43,7 +43,7 @@ mod SUPERDENSE is
     } .
 endm
 
-in model-checker .
+load model-checker .
 
 mod SUPERDENSE-PREDS is
     pr SUPERDENSE .

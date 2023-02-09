@@ -1,0 +1,13 @@
+==========================================
+reduce in SUPERDENSE-CHECK : modelCheck(init0, gateIProp) .
+result Bool: true
+==========================================
+reduce in SUPERDENSE-CHECK : modelCheck(init1, gateXProp) .
+result Bool: true
+==========================================
+reduce in SUPERDENSE-CHECK : modelCheck(init2, gateYProp) .
+result Bool: true
+==========================================
+reduce in SUPERDENSE-CHECK : modelCheck(init3, gateZProp) .
+result Bool: true
+Bye.
