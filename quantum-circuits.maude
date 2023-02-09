@@ -3,7 +3,11 @@ fmod SCALAR is
     pr EXT-BOOL .
 
     sort Scalar .
-    subsort Rat < Scalar .
+    sort iNumber .
+    subsort Rat iNumber < Scalar .
+
+    --- imaginary unit
+    op i : -> iNumber [ctor].
 
     --- basic operators
     op _.*_ : Scalar Scalar -> Scalar [comm assoc prec 32] .
@@ -27,6 +31,13 @@ fmod SCALAR is
 
     vars R R1 R2 : Rat .
     vars S S1 S2 S3 S4 : Scalar .
+
+    --- imaginary properties
+    eq i .* i = -1 .
+    eq Abs(i) = 1 .
+
+    --- Pow properties
+    eq Pow(R1, R2) = (R1)^(R2) .
 
     --- rational number calculation.
     eq R1 .* R2 = R1 * R2 .
@@ -197,6 +208,7 @@ fmod MATRIX is
     --- basic gates
     ops X Y Z H CX : -> Matrix .
     eq X = B1 + B2 .
+    eq Y = ((-1) .* i) . B1 + i . B2 .
     eq Z = B0  + (-1) . B3 .
     eq H = 1 ./ Sqrt(2) . B0 + 1 ./ Sqrt(2) . B1 + 1 ./ Sqrt(2) . B2 + -1 ./ Sqrt(2) . B3 .
     eq CX = B0 (x) I + B3 (x) X .
@@ -227,15 +239,32 @@ fmod QUBIT is
     op errQ : -> Qubit [ctor] .
     op __ : Qubit Qubit -> Qubit [ctor assoc comm id: emp] .
 
+    --- applying gates on zero matrix
+    --- eq ((q[NL1 N NL2]: O) QS).H(N) = (q[NL1 N NL2]: O) QS .
+    --- eq (O).I(N) = O .
+    --- eq (O).X(N) = O .
+    --- eq (O).Z(N) = O .
+    --- eq (O).CX(N1, N2) = O .
+    --- eq (O).M(P, N) = {qstate: O, prob: 0} .
+
     --- applying hadmard gate
     op _.H(_) : Qubit Nat -> Qubit .
     ceq ((q[NL1 N NL2]: M) QS).H(N) = (q[NL1 N NL2]: G x M) QS
     if G := iGates(size(NL1)) (x) H (x) iGates(size(NL2)) .
 
+    --- applying I gate
+    op _.I(_) : Qubit Nat -> Qubit .
+    eq (QS).I(N) = QS .
+
     --- applying X gate
     op _.X(_) : Qubit Nat -> Qubit .
     ceq ((q[NL1 N NL2]: M) QS).X(N) = (q[NL1 N NL2]: G x M) QS
     if G := iGates(size(NL1)) (x) X (x) iGates(size(NL2)) .
+
+    --- applying Y gate
+    op _.Y(_) : Qubit Nat -> Qubit .
+    ceq ((q[NL1 N NL2]: M) QS).Y(N) = (q[NL1 N NL2]: G x M) QS
+    if G := iGates(size(NL1)) (x) Y (x) iGates(size(NL2)) .
 
     --- applying Z gate
     op _.Z(_) : Qubit Nat -> Qubit .
@@ -269,7 +298,9 @@ fmod QUBIT is
     --- applying a measurement with a specific matrix at a specific position
     op _.M(_,_) : Qubit Matrix Nat -> StateProb .
     ceq ((q[NL1 N NL2]: M1) QS).M(P, N)
-    = {qstate: ((q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . M3)) QS), prob: Prob}
+    =   if Prob == 0 and-then M3 == O then {qstate: ((q[NL1 N NL2]: (M3)) QS), prob: Prob}
+        else {qstate: ((q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . M3)) QS), prob: Prob}
+        fi
     if M2 := ((M1)^+) x
             ((iGates(size(NL1)) (x) P (x) iGates(size(NL2)))^+) x
             (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x
@@ -279,9 +310,9 @@ fmod QUBIT is
 
     --- obtaining scalar for inter product:  S . I (x) I (x) I -> S
     op scalar : Matrix -> Scalar .
+    eq scalar(O) = 0 .
     eq scalar(S . M) = if isIdens(M) then S else errS fi .
     eq scalar(M) = if isIdens(M) then 1 else errS fi .
-    eq scalar(O) = 0 .
 
     --- I (x) I (x) I ...
     op isIdens : Matrix -> Bool .
@@ -325,6 +356,7 @@ fmod ACTION is
     sort Action .
     op I`(_`) : Nat -> Action .
     op X`(_`) : Nat -> Action .
+    op Y`(_`) : Nat -> Action .
     op Z`(_`) : Nat -> Action .
     op H`(_`) : Nat -> Action .
     op CX`(_,_`) : Nat Nat -> Action .
@@ -391,6 +423,10 @@ mod CIRCUIT is
     crl [X] : {(qstate: Q) (actions: (X(N) AL)) OCs}
     => {(qstate: Q') (actions: AL) OCs}
     if Q' := (Q).X(N) .
+
+    crl [Y] : {(qstate: Q) (actions: (Y(N) AL)) OCs}
+    => {(qstate: Q') (actions: AL) OCs}
+    if Q' := (Q).Y(N) .
 
     crl [Z] : {(qstate: Q) (actions: (Z(N) AL)) OCs}
     => {(qstate: Q') (actions: AL) OCs}
