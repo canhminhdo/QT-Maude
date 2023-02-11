@@ -120,7 +120,7 @@ fmod MATRIX is
     op nil : -> Matrix [ctor] .
     --- error matrix
     op errM : -> Matrix [ctor] .
-    --- scalar product
+    --- scalar multiplication with matrix
     op _._ : Scalar Matrix -> Matrix [prec 31] .
     --- matrix product
     op _x_ : Matrix Matrix -> Matrix [assoc prec 31] .
@@ -308,7 +308,7 @@ fmod QUBIT is
     /\ Prob := scalar(M2)
     /\ M3 := (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x M1 .
 
-    --- obtaining scalar for inter product:  S . I (x) I (x) I -> S
+    --- obtaining scalar for inner product:  S . I (x) I (x) I -> S
     op scalar : Matrix -> Scalar .
     eq scalar(O) = 0 .
     eq scalar(S . M) = if isIdens(M) then S else errS fi .
