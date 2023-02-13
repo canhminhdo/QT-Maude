@@ -50,7 +50,8 @@ mod TELEPORT-CHECK is
     eq teleProp = True U isSuccess .
 endm
 
---- red getState(getState((initState).H(1).CX(1, 2).CX(0, 1).H(0).M(P0, 0)).M(P0, 1)) .
 red modelCheck(init, teleProp) .
 search in TELEPORT : init =>* {(qstate: Q:Qubit) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}}
 such that qubitAt(Q:Qubit, 2) == qubitAt(initState, 0) and P:Scalar > 0 .
+
+--- red getState(getState((initState).H(1).CX(1, 2).CX(0, 1).H(0).M(P0, 0)).M(P0, 1)) .

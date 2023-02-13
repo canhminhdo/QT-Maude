@@ -10,4 +10,40 @@ result Bool: true
 ==========================================
 reduce in SUPERDENSE-CHECK : modelCheck(init3, gateZProp) .
 result Bool: true
+==========================================
+search in SUPERDENSE : init0 =>* {OCs:Soup{OComp} qstate: Q:Qubit prob:
+    P:Scalar isEnd: true} such that P:Scalar > 0 = true .
+
+OCs:Soup{OComp} --> bits: (0 |-> 0, 1 |-> 0) actions: nil
+Q:Qubit --> (q[0]: |0>) q[1]: |0>
+P:Scalar --> 1
+
+No more solutions.
+==========================================
+search in SUPERDENSE : init1 =>* {OCs:Soup{OComp} qstate: Q:Qubit prob:
+    P:Scalar isEnd: true} such that P:Scalar > 0 = true .
+
+OCs:Soup{OComp} --> bits: (0 |-> 0, 1 |-> 1) actions: nil
+Q:Qubit --> (q[0]: |0>) q[1]: |1>
+P:Scalar --> 1
+
+No more solutions.
+==========================================
+search in SUPERDENSE : init2 =>* {OCs:Soup{OComp} qstate: Q:Qubit prob:
+    P:Scalar isEnd: true} such that P:Scalar > 0 = true .
+
+OCs:Soup{OComp} --> bits: (0 |-> 1, 1 |-> 1) actions: nil
+Q:Qubit --> (q[0]: |1>) q[1]: |1>
+P:Scalar --> 1
+
+No more solutions.
+==========================================
+search in SUPERDENSE : init3 =>* {OCs:Soup{OComp} qstate: Q:Qubit prob:
+    P:Scalar isEnd: true} such that P:Scalar > 0 = true .
+
+OCs:Soup{OComp} --> bits: (0 |-> 1, 1 |-> 0) actions: nil
+Q:Qubit --> (q[0]: |1>) q[1]: |0>
+P:Scalar --> 1
+
+No more solutions.
 Bye.

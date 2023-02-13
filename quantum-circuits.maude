@@ -151,6 +151,8 @@ fmod MATRIX is
     --- nil matrix
     eq nil (x) M = M .
     eq M (x) nil = M .
+    eq M + nil = M .
+    eq S . nil = nil .
 
     --- identity matrix properties
     eq I x M = M .
@@ -210,7 +212,7 @@ fmod MATRIX is
     eq X = B1 + B2 .
     eq Y = ((-1) .* i) . B1 + i . B2 .
     eq Z = B0  + (-1) . B3 .
-    eq H = 1 ./ Sqrt(2) . B0 + 1 ./ Sqrt(2) . B1 + 1 ./ Sqrt(2) . B2 + -1 ./ Sqrt(2) . B3 .
+    eq H = 1 ./ Sqrt(2) . B0 + 1 ./ Sqrt(2) . B1 + 1 ./ Sqrt(2) . B2 + (-1) ./ Sqrt(2) . B3 .
     eq CX = B0 (x) I + B3 (x) X .
 endfm
 
@@ -227,17 +229,21 @@ fmod QUBIT is
     vars NeNL : NeNatList .
     vars QS : Qubit .
     vars S Prob : Scalar .
-    vars Ket : Ket .
+    vars Ket Ket1 Ket2 : Ket .
     vars Bra : Bra .
 
     op (q[_]:_) : NatList Matrix -> Qubit .
     mb(q[N]: M) : OneQubit .
     mb(q[N1 N2 NL]: M) : EnQubit .
+
     --- empty qubit
     op emp : -> Qubit [ctor] .
     --- error qubit
     op errQ : -> Qubit [ctor] .
     op __ : Qubit Qubit -> Qubit [ctor assoc comm id: emp] .
+
+    --- remove unnecessary qubits
+    eq (q[nil]: M) = emp .
 
     --- applying gates on zero matrix
     --- eq ((q[NL1 N NL2]: O) QS).H(N) = (q[NL1 N NL2]: O) QS .
@@ -299,7 +305,13 @@ fmod QUBIT is
     op _.M(_,_) : Qubit Matrix Nat -> StateProb .
     ceq ((q[NL1 N NL2]: M1) QS).M(P, N)
     =   if Prob == 0 and-then M3 == O then {qstate: ((q[NL1 N NL2]: (M3)) QS), prob: Prob}
-        else {qstate: ((q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . M3)) QS), prob: Prob}
+        else {
+            qstate: (
+                (q[N]: if P == P0 then |0> else |1> fi)
+                (q[NL1 NL2]: ((1 ./ Sqrt(Prob)) . rmQubitAt(NL1 N NL2, N, M3)))
+                QS
+            ), prob: Prob
+        }
         fi
     if M2 := ((M1)^+) x
             ((iGates(size(NL1)) (x) P (x) iGates(size(NL2)))^+) x
@@ -307,6 +319,7 @@ fmod QUBIT is
             M1
     /\ Prob := scalar(M2)
     /\ M3 := (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x M1 .
+    --- qstate: ((q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . M3)) QS), prob: Prob
 
     --- obtaining scalar for inner product:  S . I (x) I (x) I -> S
     op scalar : Matrix -> Scalar .
@@ -338,6 +351,25 @@ fmod QUBIT is
     op qubitAt** : NatList Nat Matrix -> Matrix .
     eq qubitAt**(N1 NL, N2, Ket (x) M) = if N1 == N2 then Ket else qubitAt**(NL, N2, M) fi .
     eq qubitAt**(N, N, Ket) = Ket .
+
+    --- remove qubit at a index after a measurement
+    op rmQubitAt : NatList Nat Matrix -> Matrix .
+    eq rmQubitAt(NL, N, S . M) = S . rmQubitAt*(NL, N, M) .
+    eq rmQubitAt(NL, N, S . M1 + M2) = rmQubitAt(NL, N, S . M1) + rmQubitAt(NL, N, M2) .
+    eq rmQubitAt(NL, N, Ket (x) M) = rmQubitAt*(NL, N, Ket (x) M) .
+
+    op rmQubitAt* : NatList Nat Matrix -> Matrix .
+    eq rmQubitAt*(N1 NL, N2, Ket (x) M) = if N1 == N2 then M else Ket (x) rmQubitAt*(NL, N2, M) fi .
+    eq rmQubitAt*(N, N, Ket) = nil .
+
+    --- checking if qubit is solely |0> or |1>
+    op isQubitAt : NatList Nat Matrix Ket -> Bool .
+    eq isQubitAt(NL, N, S . M, Ket) = isQubitAt*(NL, N, M, Ket) .
+    eq isQubitAt(NL, N, S . M1 + M2, Ket) = isQubitAt(NL, N, S . M1, Ket) and isQubitAt(NL, N, M2, Ket) .
+
+    op isQubitAt* : NatList Nat Matrix Ket -> Bool .
+    eq isQubitAt*(N1 NL, N2, Ket1 (x) M, Ket2) = if N1 == N2 then Ket1 == Ket2 else isQubitAt*(NL, N2, M, Ket2) fi .
+    eq isQubitAt*(N, N, Ket1, Ket2) = Ket1 == Ket2 .
 endfm
 
 fmod BIT is
@@ -440,6 +472,7 @@ mod CIRCUIT is
     => {(qstate: Q') (actions: AL) OCs}
     if Q' := (Q).CX(N1, N2).
 
+    --- measurement with z-basis states (the standard basis)
     crl [M0] : {(qstate: Q) (actions: (M(N) AL)) (prob: Prob) (bits: BM) OCs}
     => {(qstate: Q') (actions: AL) (prob: (Prob .* Prob')) (bits: insert(N, 0, BM)) OCs}
     if {qstate: Q', prob: Prob'} := (Q).M(P0, N) .
