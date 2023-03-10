@@ -3,7 +3,7 @@ reduce in TELEPORT-CHECK : modelCheck(init, teleProp) .
 result Bool: true
 ==========================================
 search in TELEPORT : init =>* {OCs:Soup{OComp} qstate: Q:Qubit prob: P:Scalar
-    isEnd: true} such that P:Scalar > 0 and qubitAt(Q:Qubit, 2) == qubitAt(
+    isEnd: true} such that P:Scalar > 0 implies qubitAt(Q:Qubit, 2) == qubitAt(
     initState, 0) = true .
 
 OCs:Soup{OComp} --> bits: (0 |-> 0, 1 |-> 0) actions: nil
