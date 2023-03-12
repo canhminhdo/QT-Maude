@@ -58,10 +58,10 @@ mod SUPERDENSE-PREDS is
 
     ops isGateI isGateX isGateY isGateZ : -> Prop .
 
-    eq {(isEnd: true) (bits: BM ) (prob: Prob) OCs} |= isGateI
+    eq {(isEnd: true) (bits: BM) (prob: Prob) OCs} |= isGateI
     = (Prob > 0) implies (BM[0] == 0 and BM[1] == 0) .
 
-    eq {(isEnd: true) (bits: BM ) (prob: Prob) OCs} |= isGateX
+    eq {(isEnd: true) (bits: BM) (prob: Prob) OCs} |= isGateX
     = (Prob > 0) implies (BM[0] == 0 and BM[1] == 1) .
 
     eq {(isEnd: true) (bits: BM) (prob: Prob) OCs} |= isGateY
