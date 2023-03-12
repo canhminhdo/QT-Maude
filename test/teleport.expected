@@ -4,7 +4,7 @@ result Bool: true
 ==========================================
 search in TELEPORT : init =>* {OCs:Soup{OComp} qstate: Q:Qubit prob: P:Scalar
     isEnd: true} such that P:Scalar > 0 implies qubitAt(Q:Qubit, 2) == qubitAt(
-    initState, 0) = true .
+    qstate(init), 0) = true .
 
 OCs:Soup{OComp} --> bits: (0 |-> 0, 1 |-> 0) actions: nil
 Q:Qubit --> (q[0]: |0>) (q[1]: |0>) q[2]: a . |0> + b . |1>

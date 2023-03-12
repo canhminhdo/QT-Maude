@@ -3,12 +3,12 @@ load quantum-circuits.maude
 mod SUPERDENSE is
     pr CIRCUIT .
 
-    op initState : -> Qubit .
-    eq initState = (q[0]: |0>) (q[1]: |0>) .
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: |0>) (q[1]: |0>) .
 
     op init0 : -> Config .
     eq init0 = {
-        (qstate: initState)
+        (qstate: initQState)
         (actions: (H(0) CX(0, 1) I(0) CX(0, 1) H(0) M(0) M(1)))
         (prob: 1)
         (bits: empty)
@@ -17,7 +17,7 @@ mod SUPERDENSE is
 
     op init1 : -> Config .
     eq init1 = {
-        (qstate: initState)
+        (qstate: initQState)
         (actions: (H(0) CX(0, 1) X(0) CX(0, 1) H(0) M(0) M(1)))
         (prob: 1)
         (bits: empty)
@@ -26,7 +26,7 @@ mod SUPERDENSE is
 
     op init2 : -> Config .
     eq init2 = {
-        (qstate: initState)
+        (qstate: initQState)
         (actions: (H(0) CX(0, 1) Y(0) CX(0, 1) H(0) M(0) M(1)))
         (prob: 1)
         (bits: empty)
@@ -35,7 +35,7 @@ mod SUPERDENSE is
 
     op init3 : -> Config .
     eq init3 = {
-        (qstate: initState)
+        (qstate: initQState)
         (actions: (H(0) CX(0, 1) Z(0) CX(0, 1) H(0) M(0) M(1)))
         (prob: 1)
         (bits: empty)
@@ -96,30 +96,30 @@ search in SUPERDENSE : init1 =>* {(qstate: Q:Qubit) (isEnd: true) (prob: P:Scala
 search in SUPERDENSE : init2 =>* {(qstate: Q:Qubit) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}} such that P:Scalar > 0 .
 search in SUPERDENSE : init3 =>* {(qstate: Q:Qubit) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}} such that P:Scalar > 0 .
 
---- red (initState).H(0).CX(0, 1).Y(0).CX(0,1).H(0) .
---- red (initState).H(0).CX(0, 1).Y(0).CX(0,1).H(0).M(P0, 0) .
---- red (initState).H(0).CX(0, 1).Y(0).CX(0,1).H(0).M(P1, 0) .
---- red getState((initState).H(0).CX(0, 1).Y(0).CX(0,1).H(0).M(P0, 0)).M(P0, 1) .
---- red getState((initState).H(0).CX(0, 1).Y(0).CX(0,1).H(0).M(P0, 0)).M(P1, 1) .
---- red getState((initState).H(0).CX(0, 1).Y(0).CX(0,1).H(0).M(P1, 0)).M(P0, 1) .
---- red getState((initState).H(0).CX(0, 1).Y(0).CX(0,1).H(0).M(P1, 0)).M(P1, 1) .
+--- red (initQState).H(0).CX(0, 1).Y(0).CX(0,1).H(0) .
+--- red (initQState).H(0).CX(0, 1).Y(0).CX(0,1).H(0).M(P0, 0) .
+--- red (initQState).H(0).CX(0, 1).Y(0).CX(0,1).H(0).M(P1, 0) .
+--- red getState((initQState).H(0).CX(0, 1).Y(0).CX(0,1).H(0).M(P0, 0)).M(P0, 1) .
+--- red getState((initQState).H(0).CX(0, 1).Y(0).CX(0,1).H(0).M(P0, 0)).M(P1, 1) .
+--- red getState((initQState).H(0).CX(0, 1).Y(0).CX(0,1).H(0).M(P1, 0)).M(P0, 1) .
+--- red getState((initQState).H(0).CX(0, 1).Y(0).CX(0,1).H(0).M(P1, 0)).M(P1, 1) .
 
---- red getState((initState).H(0).CX(0, 1).I(0).CX(0,1).H(0).M(P0, 0)).M(P0, 1) .
---- red getState((initState).H(0).CX(0, 1).I(0).CX(0,1).H(0).M(P0, 0)).M(P1, 1) .
---- red getState((initState).H(0).CX(0, 1).I(0).CX(0,1).H(0).M(P1, 0)).M(P0, 1) .
---- red getState((initState).H(0).CX(0, 1).I(0).CX(0,1).H(0).M(P1, 0)).M(P1, 1) .
+--- red getState((initQState).H(0).CX(0, 1).I(0).CX(0,1).H(0).M(P0, 0)).M(P0, 1) .
+--- red getState((initQState).H(0).CX(0, 1).I(0).CX(0,1).H(0).M(P0, 0)).M(P1, 1) .
+--- red getState((initQState).H(0).CX(0, 1).I(0).CX(0,1).H(0).M(P1, 0)).M(P0, 1) .
+--- red getState((initQState).H(0).CX(0, 1).I(0).CX(0,1).H(0).M(P1, 0)).M(P1, 1) .
 
---- red getState((initState).H(0).CX(0, 1).X(0).CX(0,1).H(0).M(P0, 0)).M(P0, 1) .
---- red getState((initState).H(0).CX(0, 1).X(0).CX(0,1).H(0).M(P0, 0)).M(P1, 1) .
---- red getState((initState).H(0).CX(0, 1).X(0).CX(0,1).H(0).M(P1, 0)).M(P0, 1) .
---- red getState((initState).H(0).CX(0, 1).X(0).CX(0,1).H(0).M(P1, 0)).M(P1, 1) .
+--- red getState((initQState).H(0).CX(0, 1).X(0).CX(0,1).H(0).M(P0, 0)).M(P0, 1) .
+--- red getState((initQState).H(0).CX(0, 1).X(0).CX(0,1).H(0).M(P0, 0)).M(P1, 1) .
+--- red getState((initQState).H(0).CX(0, 1).X(0).CX(0,1).H(0).M(P1, 0)).M(P0, 1) .
+--- red getState((initQState).H(0).CX(0, 1).X(0).CX(0,1).H(0).M(P1, 0)).M(P1, 1) .
 
---- red getState((initState).H(0).CX(0, 1).Z(0).CX(0,1).H(0).M(P0, 0)).M(P0, 1) .
---- red getState((initState).H(0).CX(0, 1).Z(0).CX(0,1).H(0).M(P0, 0)).M(P1, 1) .
---- red getState((initState).H(0).CX(0, 1).Z(0).CX(0,1).H(0).M(P1, 0)).M(P0, 1) .
---- red getState((initState).H(0).CX(0, 1).Z(0).CX(0,1).H(0).M(P1, 0)).M(P1, 1) .
+--- red getState((initQState).H(0).CX(0, 1).Z(0).CX(0,1).H(0).M(P0, 0)).M(P0, 1) .
+--- red getState((initQState).H(0).CX(0, 1).Z(0).CX(0,1).H(0).M(P0, 0)).M(P1, 1) .
+--- red getState((initQState).H(0).CX(0, 1).Z(0).CX(0,1).H(0).M(P1, 0)).M(P0, 1) .
+--- red getState((initQState).H(0).CX(0, 1).Z(0).CX(0,1).H(0).M(P1, 0)).M(P1, 1) .
 
---- red (initState).H(0).CX(0, 1).I(0).CX(0,1).H(0).M(P1, 0) .
---- red (initState).H(0).CX(0, 1).X(0).CX(0,1).H(0) .
---- red (initState).H(0).CX(0, 1).Y(0) .
---- red (initState).H(0).CX(0, 1).Z(0).CX(0,1).H(0) .
+--- red (initQState).H(0).CX(0, 1).I(0).CX(0,1).H(0).M(P1, 0) .
+--- red (initQState).H(0).CX(0, 1).X(0).CX(0,1).H(0) .
+--- red (initQState).H(0).CX(0, 1).Y(0) .
+--- red (initQState).H(0).CX(0, 1).Z(0).CX(0,1).H(0) .

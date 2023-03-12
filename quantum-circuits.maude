@@ -436,6 +436,9 @@ fmod CONFIG is
     pr SOUP{OComp} .
     sort Config .
     op {_} : Soup{OComp} -> Config [ctor] .
+
+    op qstate : Config -> Qubit .
+    eq qstate({(qstate: Q:Qubit) OCs:Soup{OComp}}) = Q:Qubit .
 endfm
 
 mod CIRCUIT is
