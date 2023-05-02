@@ -47,7 +47,7 @@ mod TELEPORT-CHECK is
     inc LTL-SIMPLIFIER .
 
     op teleProp : -> Formula .
-    eq teleProp = True U isSuccess .
+    eq teleProp = <> isSuccess .
 endm
 
 red modelCheck(init, teleProp) .

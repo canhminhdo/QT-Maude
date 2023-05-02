@@ -80,10 +80,10 @@ mod SUPERDENSE-CHECK is
 
     ops gateIProp gateXProp gateYProp gateZProp : -> Formula .
 
-    eq gateIProp = True U isGateI .
-    eq gateXProp = True U isGateX .
-    eq gateYProp = True U isGateY .
-    eq gateZProp = True U isGateZ .
+    eq gateIProp = <> isGateI .
+    eq gateXProp = <> isGateX .
+    eq gateYProp = <> isGateY .
+    eq gateZProp = <> isGateZ .
 endm
 
 red modelCheck(init0, gateIProp) .
