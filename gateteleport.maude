@@ -1,0 +1,68 @@
+load quantum-circuits.maude
+
+mod GATE-TELEPORT is
+    pr CIRCUIT .
+
+    var S : Scalar .
+
+    --- defining initial states
+    ops a b c d : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    eq Pow(Abs(c), 2) .+ Pow(Abs(d), 2) = 1 .
+    eq S .* Pow(Abs(c), 2) .+ S .* Pow(Abs(d), 2) = S .
+
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) (q[4]: |0>) (q[5]: c . |0> + d . |1>) .
+
+    op targetQState : -> Qubit .
+    eq targetQState = ((q[0]: c . |0> + d . |1>) (q[1]: a . |0> + b . |1>)).CX(0, 1) .
+
+    op init : -> Config .
+    eq init = {
+        (qstate: initQState)
+        (actions: (
+            H(1) CX(1, 2) H(3) CX(3, 4) CX(3, 2) CX(0, 1) H(0) CX(4, 5) H(4)
+            M(0) M(1) M(5) M(4)
+            (c[0] == 1 ? Z(2) Z(3))
+            (c[1] == 1 ? X(2))
+            (c[5] == 1 ? X(2) X(3))
+            (c[4] == 1 ? Z(3))
+        ))
+        (prob: 1)
+        (bits: empty)
+        (isEnd: false)
+    } .
+endm
+
+load model-checker .
+
+mod GATE-TELEPORT-PREDS is
+    pr GATE-TELEPORT .
+    inc SATISFACTION .
+
+    subsort Config < State .
+
+    var OCs : Soup{OComp} .
+    var PROP : Prop .
+    var Q : Qubit .
+    var Prob : Scalar .
+
+    op isSuccess : -> Prop .
+    eq {(isEnd: true) (qstate: Q) (prob: Prob) OCs} |= isSuccess
+    = Prob > 0 implies 
+    (qubitAt(Q, 3 2) == qubitAt(targetQState, 0 1) or qubitAt(Q, 3 2) == (-1) . qubitAt(targetQState, 0 1)) .
+    eq {OCs} |= PROP = false [owise] .
+endm
+
+mod GATE-TELEPORT-CHECK is
+    inc GATE-TELEPORT-PREDS .
+    inc MODEL-CHECKER .
+    inc LTL-SIMPLIFIER .
+
+    op gateProp : -> Formula .
+    eq gateProp = <> isSuccess .
+endm
+
+red modelCheck(init, gateProp) .

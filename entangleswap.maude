@@ -1,0 +1,55 @@
+load quantum-circuits.maude
+
+mod ENTAGLE-SWAP is
+    pr CIRCUIT .
+
+    ops EPR : -> Matrix .
+    eq EPR = (1 ./ Sqrt(2)) . |0>(x)|0> + (1 ./ Sqrt(2)) . |1>(x)|1> .
+
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: |0>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) .
+
+    op init : -> Config .
+    eq init = {
+        (qstate: initQState)
+        (actions: (
+            H(0) CX(0, 1) H(2) CX(2, 3) CX(1, 2) H(1)
+            M(2) M(1)
+            (c[2] == 1 ? X(3))
+            (c[1] == 1 ? Z(3)))
+        )
+        (prob: 1)
+        (bits: empty)
+        (isEnd: false)
+    } .
+endm
+
+load model-checker .
+
+mod ENTAGLE-SWAP-PREDS is
+    pr ENTAGLE-SWAP .
+    inc SATISFACTION .
+
+    subsort Config < State .
+
+    var OCs : Soup{OComp} .
+    var PROP : Prop .
+    var Q : Qubit .
+    var Prob : Scalar .
+
+    op isSuccess : -> Prop .
+    eq {(isEnd: true) (qstate: Q) (prob: Prob) OCs} |= isSuccess
+    = Prob > 0 implies qubitAt(Q, 0 3) == EPR .
+    eq {OCs} |= PROP = false [owise] .
+endm
+
+mod ENTAGLE-SWAP-CHECK is
+    inc ENTAGLE-SWAP-PREDS .
+    inc MODEL-CHECKER .
+    inc LTL-SIMPLIFIER .
+
+    op teleEntangle : -> Formula .
+    eq teleEntangle = <> isSuccess .
+endm
+
+red modelCheck(init, teleEntangle) .
