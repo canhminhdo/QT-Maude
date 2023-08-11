@@ -33,7 +33,7 @@ search in SUPERDENSE : init2 =>* {OCs:Soup{OComp} qstate: Q:Qubit prob:
     P:Scalar isEnd: true} such that P:Scalar > 0 = true .
 
 OCs:Soup{OComp} --> bits: (0 |-> 1, 1 |-> 1) actions: nil
-Q:Qubit --> (q[0]: |1>) q[1]: |1>
+Q:Qubit --> (q[0]: (i .* -1) . |1>) q[1]: |1>
 P:Scalar --> 1
 
 No more solutions.

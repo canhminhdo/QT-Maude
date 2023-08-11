@@ -51,6 +51,7 @@ mod TELEPORT-CHECK is
 endm
 
 red modelCheck(init, teleProp) .
+
 search in TELEPORT : init =>* {(qstate: Q:Qubit) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}}
 such that P:Scalar > 0 implies qubitAt(Q:Qubit, 2) == qubitAt(qstate(init), 0) .
 

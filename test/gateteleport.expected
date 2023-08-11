@@ -1,0 +1,4 @@
+==========================================
+reduce in GATE-TELEPORT-CHECK : modelCheck(init, gateProp) .
+result Bool: true
+Bye.

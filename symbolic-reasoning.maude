@@ -88,6 +88,7 @@ fmod SCALAR is
     eq 1 ./ (S .* (R1 / R2)) =  (R2 / R1) .* (1 ./ S) .
 
     --- Sqrt calculation
+    eq Sqrt(- N) = i .* N .
     eq Sqrt(1) = 1 .
     eq Sqrt(0) = 0 .
     eq Sqrt(S) .* Sqrt(S) = S .
@@ -313,11 +314,10 @@ fmod SYMBOLIC-REASONING is
     --- applying a measurement with a specific matrix at a specific position
     op _.M(_,_) : Qubit Matrix Nat -> StateProb .
     ceq ((q[NL1 N NL2]: M1) QS).M(P, N)
-    =   if Prob == 0 and-then M3 == O then {qstate: ((q[NL1 N NL2]: (M3)) QS), prob: Prob}
+    =   if Prob == 0 and-then M3 == O then {qstate: (simplify(q[NL1 N NL2]: M3) QS), prob: Prob}
         else {
             qstate: (
-                (q[N]: if P == P0 then |0> else |1> fi)
-                (q[NL1 NL2]: ((1 ./ Sqrt(Prob)) . rmQubitAt(NL1 N NL2, N, M3)))
+                simplify(q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . M3))
                 QS
             ), prob: Prob
         }

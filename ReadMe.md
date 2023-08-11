@@ -1,3 +1,28 @@
 ### Symbolic Model Checking Quantum Circuits in Maude
 ---
-This paper presents a symbolic approach to model checking quantum circuits by using a set of laws from quantum mechanics and basic matrix operations with Dirac notation. We use Maude, a high-level specification/programming language based on rewriting logic, to implement our symbolic approach. As a case study, we use the approach to formally specify and verify the correctness of the quantum teleportation protocol, which is an important quantum communication protocol in the early work of quantum communications. Moreover, our implementation can be used as a general framework to formally specify and verify quantum circuits in Maude in an effortless way where only an initial quantum state and a sequence of actions describing how a quantum circuit works in a simple way are required.
+This repository presents a support tool developed in Maude to model check quantum circuits using a symbolic reasoning and built-in Maude LTL model checker.
+
+## Dependencies
+- Maude is a programming/specification language based on rewriting logic. How to download and install Maude can be found at [here](http://maude.cs.illinois.edu/w/index.php/The_Maude_System).
+
+## How to install
+- Clone the source code to your computer and go to the source code directory.
+
+- Feed a Maude file that is the formal specification of a protocol being verified into Maude.
+
+For example, we can type the following command in CLI in order to verify the correctness of the quantum teleportation protocol:
+
+```console
+maude teleport.maude
+```
+- For testing, go to the `test` folder and run the `./tester` file in CLI.
+
+## Case Studies
+We successfully verified the correctness of some quantum protocols with the support tool as follows:
+- Superdense Coding
+- Quantum Teleportation
+- Quantum Secret Sharing
+- Entanglement Swapping
+- Quantum Gate Teleportation
+- Quantum Network Coding
+- ...

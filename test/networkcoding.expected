@@ -1,0 +1,4 @@
+==========================================
+reduce in NETWORK-CODING-CHECK : modelCheck(init, networkProp) .
+result Bool: true
+Bye.
