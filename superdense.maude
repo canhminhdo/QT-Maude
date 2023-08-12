@@ -86,6 +86,8 @@ mod SUPERDENSE-CHECK is
     eq gateZProp = <> isGateZ .
 endm
 
+in debug.maude
+
 red modelCheck(init0, gateIProp) .
 red modelCheck(init1, gateXProp) .
 red modelCheck(init2, gateYProp) .

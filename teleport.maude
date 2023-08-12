@@ -50,6 +50,8 @@ mod TELEPORT-CHECK is
     eq teleProp = <> isSuccess .
 endm
 
+in debug.maude
+
 red modelCheck(init, teleProp) .
 
 search in TELEPORT : init =>* {(qstate: Q:Qubit) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}}

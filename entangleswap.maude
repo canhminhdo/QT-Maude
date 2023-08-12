@@ -52,4 +52,6 @@ mod ENTAGLE-SWAP-CHECK is
     eq teleEntangle = <> isSuccess .
 endm
 
+in debug.maude
+
 red modelCheck(init, teleEntangle) .

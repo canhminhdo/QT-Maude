@@ -51,7 +51,7 @@ mod GATE-TELEPORT-PREDS is
 
     op isSuccess : -> Prop .
     eq {(isEnd: true) (qstate: Q) (prob: Prob) OCs} |= isSuccess
-    = Prob > 0 implies 
+    = Prob > 0 implies
     (qubitAt(Q, 3 2) == qubitAt(targetQState, 0 1) or qubitAt(Q, 3 2) == (-1) . qubitAt(targetQState, 0 1)) .
     eq {OCs} |= PROP = false [owise] .
 endm
@@ -64,5 +64,7 @@ mod GATE-TELEPORT-CHECK is
     op gateProp : -> Formula .
     eq gateProp = <> isSuccess .
 endm
+
+in debug.maude
 
 red modelCheck(init, gateProp) .
