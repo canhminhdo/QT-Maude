@@ -25,7 +25,7 @@ mod NETWORK-CODING is
     eq fanout(N1, (N2 |-> N3), (N4 |-> N5)) = con(N1, (N2 |-> N3)) con(N1, (N4 |-> N5)) .
     eq add(N1, N2, (N3 |-> N4)) = CX(N1, N3) CX(N2, N3) M(N3) (c[N3] == 1 ? X(N4)) . --- if P(N3, |0>) then skip else X(N4) fi
     eq rem(N1 |-> N2) = H(N1) M(N1) (c[N1] == 1 ? Z(N2)) .
-    eq remadd(N3 |-> (N1, N2)) = H(N3) M(N3) (c[N3] == 1 ? Z(N1) Z(N2)) . --- if P(N3, |0>) then skip else (Z(N1) ; Z(N2)) fi 
+    eq remadd(N3 |-> (N1, N2)) = H(N3) M(N3) (c[N3] == 1 ? Z(N1) Z(N2)) . --- if P(N3, |0>) then skip else (Z(N1) ; Z(N2)) fi
     eq network-coding = con(0, (2 |-> 3)) con(4, (6 |-> 7)) add(3, 7, (8 |-> 9))
                         fanout(9, (10 |-> 11), (12 |-> 13)) CX(13, 5) CX(11, 1)
                         rem(11 |-> 9) rem(13 |-> 9) remadd(9 |-> (3, 7))
@@ -61,8 +61,8 @@ mod NETWORK-CODING-PREDS is
 
     op isSuccess : -> Prop .
     eq {(isEnd: true) (qstate: Q) (prob: Prob) OCs} |= isSuccess
-    = Prob > 0 implies 
-    ((qubitAt(Q, 5 0) == EPR or qubitAt(Q, 5 0) == i . EPR) and 
+    = Prob > 0 implies
+    ((qubitAt(Q, 5 0) == EPR or qubitAt(Q, 5 0) == i . EPR) and
     (qubitAt(Q, 4 1) == EPR or qubitAt(Q, 4 1) == i . EPR)) .
     eq {OCs} |= PROP = false [owise] .
 endm
@@ -75,5 +75,7 @@ mod NETWORK-CODING-CHECK is
     op networkProp : -> Formula .
     eq networkProp = <> isSuccess .
 endm
+
+in debug.maude
 
 red modelCheck(init, networkProp) .

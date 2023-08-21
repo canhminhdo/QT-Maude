@@ -1,0 +1,7 @@
+#!/bin/sh
+
+DIR=test
+cd ../ && maude < twoteleport.maude -no-banner -no-advise | sed -r '/^(rewrites:|Solution|states:)/d' > $DIR/twoteleport.out
+# diff $DIR/twoteleport.expected twoteleport.out > /dev/null 2>&1
+diff $DIR/twoteleport.expected $DIR/twoteleport.out
+rm $DIR/twoteleport.out

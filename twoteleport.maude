@@ -60,4 +60,6 @@ mod TWO-TELEPORT-CHECK is
     eq twoteleProp = <> isSuccess .
 endm
 
+in debug.maude
+
 red modelCheck(init, twoteleProp) .

@@ -66,4 +66,6 @@ mod GATE-TELEPORT-CHECK is
     eq gateProp = <> isSuccess .
 endm
 
+in debug.maude
+
 red modelCheck(init, gateProp) .

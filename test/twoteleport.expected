@@ -1,0 +1,4 @@
+==========================================
+reduce in TWO-TELEPORT-CHECK : modelCheck(init, twoteleProp) .
+result Bool: true
+Bye.
