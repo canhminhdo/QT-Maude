@@ -1,0 +1,63 @@
+load quantum-circuits.maude
+
+mod TWO-TELEPORT is
+    pr CIRCUIT .
+
+    var S : Scalar .
+
+    ops a b c d : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    eq Pow(Abs(c), 2) .+ Pow(Abs(d), 2) = 1 .
+    eq S .* Pow(Abs(c), 2) .+ S .* Pow(Abs(d), 2) = S .
+
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) (q[4]: |0>) (q[5]: c . |0> + d . |1>) .
+
+    op init : -> Config .
+    eq init = {
+        (qstate: initQState)
+        (actions: (
+            H(1) CX(1, 2) H(3) CX(3, 4) CX(0, 1) H(0) CX(5, 4) H(5)
+            M(0) M(1) M(4) M(5)
+            (c[4] == 1 ? X(3)) 
+            (c[5] == 1 ? Z(3))
+            (c[1] == 1 ? X(2))
+            (c[0] == 1 ? Z(2))))
+        (prob: 1)
+        (bits: empty)
+        (isEnd: false)
+    } .
+endm
+
+load model-checker .
+
+mod TWO-TELEPORT-PREDS is
+    pr TWO-TELEPORT .
+    inc SATISFACTION .
+
+    subsort Config < State .
+
+    var OCs : Soup{OComp} .
+    var PROP : Prop .
+    var Q : Qubit .
+    var Prob : Scalar .
+
+    op isSuccess : -> Prop .
+    eq {(isEnd: true) (qstate: Q) (prob: Prob) OCs} |= isSuccess
+    = Prob > 0 implies 
+    (qubitAt(Q, 2) == qubitAt(initQState, 0) and qubitAt(Q, 3) == qubitAt(initQState, 5)) .
+    eq {OCs} |= PROP = false [owise] .
+endm
+
+mod TWO-TELEPORT-CHECK is
+    inc TWO-TELEPORT-PREDS .
+    inc MODEL-CHECKER .
+    inc LTL-SIMPLIFIER .
+
+    op twoteleProp : -> Formula .
+    eq twoteleProp = <> isSuccess .
+endm
+
+red modelCheck(init, twoteleProp) .
