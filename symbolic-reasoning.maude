@@ -118,8 +118,9 @@ endfm
 
 fmod MATRIX is
     pr DIRAC .
-    sorts Matrix .
-    subsorts Ket Bra < Matrix .
+    sorts Vector Matrix .
+    subsort Ket < Vector .
+    subsorts Vector Bra < Matrix .
 
     --- zero matrix
     op O : -> Matrix [ctor] .
@@ -130,18 +131,37 @@ fmod MATRIX is
     --- error matrix
     op errM : -> Matrix [ctor] .
     --- scalar multiplication with matrix
+    op _._ : Scalar Vector -> Vector [prec 31] .
     op _._ : Scalar Matrix -> Matrix [prec 31] .
     --- matrix product
     op _x_ : Matrix Matrix -> Matrix [assoc prec 31] .
     --- matrix addition
+    op _+_ : Vector Vector -> Vector [comm assoc prec 33] .
     op _+_ : Matrix Matrix -> Matrix [comm assoc prec 33] .
     --- tensor product
+    op _(x)_ : Vector Vector -> Vector [assoc prec 31] .
     op _(x)_ : Matrix Matrix -> Matrix [assoc prec 31] .
     --- dagger
     op (_)^+ : Matrix -> Matrix [prec 30] .
+    --- scalr product
+    op SP(_,_) : Vector Vector -> Scalar .
 
     vars M M1 M2 M3 M4 : Matrix .
+    vars V1 V2 V3 : Vector .
     vars S S1 S2 : Scalar .
+    vars K1 K2 : Ket .
+
+    --- scalar product
+    eq SP(|0>, |0>) = 1 .
+    eq SP(|0>, |1>) = 0 .
+    eq SP(|1>, |0>) = 0 .
+    eq SP(|1>, |1>) = 1 .
+    eq SP(S1 . V1, V2) = (S1)^* .* SP(V1, V2) .
+    eq SP(V1, S2 . V2) = S2 .* SP(V1, V2) .
+    eq SP(V1 + V2, V3) = SP(V1, V3) .+ SP(V2, V3) .
+    eq SP(V1, V2 + V3) = SP(V1, V2) .+ SP(V1, V3) .
+    eq SP(K1 (x) V1, K2 (x) V2) = SP(K1, K2) .* SP(V1, V2) .
+    eq (SP(V1, V2))^* = SP(V2, V1) .
 
     --- zero matrix properties
     eq 0 . M = O .
@@ -217,12 +237,24 @@ fmod MATRIX is
     eq P1 = B3 .
 
     --- basic gates
-    ops X Y Z H CX : -> Matrix .
+    ops X Y Z H S T CX CY CZ SWAP CCX CCZ CSWAP : -> Matrix .
     eq X = B1 + B2 .
     eq Y = ((-1) .* i) . B1 + i . B2 .
     eq Z = B0  + (-1) . B3 .
     eq H = 1 ./ Sqrt(2) . B0 + 1 ./ Sqrt(2) . B1 + 1 ./ Sqrt(2) . B2 + (-1) ./ Sqrt(2) . B3 .
+    eq S = B0 + i . B3 .
+    eq T = B0 + ((1 + i) ./ Sqrt(2)) . B3 .
     eq CX = B0 (x) I + B3 (x) X .
+    eq CY = B0 (x) I + B3 (x) Y .
+    eq CZ = B0 (x) I + B3 (x) Z .
+    --- SWAP(N1, N2) = CX(N1, N2) x CX(N2, N1) x CX(N1, N2)
+    eq SWAP = (B0 (x) I + B3 (x) X) x (I (x) B0 + X (x) B3) x (B0 (x) I + B3 (x) X) .
+    --- CCX = B0(x)I(x)I + B3(x)B0(x)I + B3(x)B3(x)B1 + B3(x)B3(x)B2
+    eq CCX = B0 (x) I (x) I + B3 (x) CX . 
+    --- CCZ = B0(x)I(x)I + B3(x)B0(x)I + B3(x)B3(x)B0 + (-1) . B3(x)B3(x)B3
+    eq CCZ = B0 (x) I (x) I + B3 (x) CZ . 
+    --- CSWAP = B0(x)I(x)I + B3(x)B0(x)B0 + B3(x)B1(x)B2 + B3(x)B2(x)B1 + B3(x)B3(x)B3
+    eq CSWAP = B0 (x) I (x) I + B3 (x) SWAP .
 endfm
 
 fmod QUBIT is
@@ -233,19 +265,19 @@ fmod QUBIT is
     subsort OneQubit EnQubit < Qubit .
 
     vars N N1 N2 : Nat .
-    var M : Matrix .
+    var V : Vector .
     var NL : NatList .
 
     --- empty qubit
     op emp : -> Qubit [ctor] .
     --- error qubit
     op errQ : -> Qubit [ctor] .
-    op (q[_]:_) : NatList Matrix -> Qubit .
+    op (q[_]:_) : NatList Vector -> Qubit .
     op __ : Qubit Qubit -> Qubit [ctor assoc comm id: emp] .
-    mb(q[N]: M) : OneQubit .
-    mb(q[N1 N2 NL]: M) : EnQubit .
+    mb(q[N]: V) : OneQubit .
+    mb(q[N1 N2 NL]: V) : EnQubit .
     --- remove unnecessary qubits
-    eq (q[nil]: M) = emp .
+    eq (q[nil]: V) = emp .
 endfm
 
 fmod SYMBOLIC-REASONING is
@@ -257,11 +289,12 @@ fmod SYMBOLIC-REASONING is
     var QS : Qubit .
     vars S S1 S2 Prob : Scalar .
     vars Ket Ket1 Ket2 : Ket .
+    vars V V1 V2 V3 : Vector .
 
     --- applying hadmard gate
     op _.H(_) : Qubit Nat -> Qubit .
-    ceq ((q[NL1 N NL2]: M) QS).H(N) = (q[NL1 N NL2]: G x M) QS
-    if G := iGates(size(NL1)) (x) H (x) iGates(size(NL2)) .
+    ceq ((q[NL1 N NL2]: V) QS).H(N) = (q[NL1 N NL2]: M x V) QS
+    if M := iGates(size(NL1)) (x) H (x) iGates(size(NL2)) .
 
     --- applying I gate
     op _.I(_) : Qubit Nat -> Qubit .
@@ -269,39 +302,39 @@ fmod SYMBOLIC-REASONING is
 
     --- applying X gate
     op _.X(_) : Qubit Nat -> Qubit .
-    ceq ((q[NL1 N NL2]: M) QS).X(N) = (q[NL1 N NL2]: G x M) QS
-    if G := iGates(size(NL1)) (x) X (x) iGates(size(NL2)) .
+    ceq ((q[NL1 N NL2]: V) QS).X(N) = (q[NL1 N NL2]: M x V) QS
+    if M := iGates(size(NL1)) (x) X (x) iGates(size(NL2)) .
 
     --- applying Y gate
     op _.Y(_) : Qubit Nat -> Qubit .
-    ceq ((q[NL1 N NL2]: M) QS).Y(N) = (q[NL1 N NL2]: G x M) QS
-    if G := iGates(size(NL1)) (x) Y (x) iGates(size(NL2)) .
+    ceq ((q[NL1 N NL2]: V) QS).Y(N) = (q[NL1 N NL2]: M x V) QS
+    if M := iGates(size(NL1)) (x) Y (x) iGates(size(NL2)) .
 
     --- applying Z gate
     op _.Z(_) : Qubit Nat -> Qubit .
-    ceq ((q[NL1 N NL2]: M) QS).Z(N) = (q[NL1 N NL2]: G x M) QS
-    if G := iGates(size(NL1)) (x) Z (x) iGates(size(NL2)) .
+    ceq ((q[NL1 N NL2]: V) QS).Z(N) = (q[NL1 N NL2]: M x V) QS
+    if M := iGates(size(NL1)) (x) Z (x) iGates(size(NL2)) .
 
     --- applying CX gate
     op _.CX(_,_) : Qubit Nat Nat -> Qubit .
-    ceq ((q[NL1 N1 NL2]: M1) (q[NL3 N2 NL4]: M2) QS).CX(N1, N2)
-    = simplify((q[NL1 N1 NL2 NL3 N2 NL4]: G x M)) QS
-    if M := M1 (x) M2
-    /\ G1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x)
+    ceq ((q[NL1 N1 NL2]: V1) (q[NL3 N2 NL4]: V2) QS).CX(N1, N2)
+    = simplify((q[NL1 N1 NL2 NL3 N2 NL4]: M x V)) QS
+    if V := V1 (x) V2
+    /\ M1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x)
             iGates(size(NL3)) (x) I (x) iGates(size(NL4))
-    /\ G2 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x)
+    /\ M2 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x)
             iGates(size(NL3)) (x) X (x) iGates(size(NL4))
-    /\ G := G1 + G2 .
+    /\ M := M1 + M2 .
 
-    ceq ((q[NL1 N1 NL2 N2 NL3]: M) QS).CX(N1, N2) = simplify((q[NL1 N1 NL2 N2 NL3]: G x M)) QS
-    if G1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x) I (x) iGates(size(NL3))
-    /\ G2 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x) X (x) iGates(size(NL3))
-    /\ G := G1 + G2 .
+    ceq ((q[NL1 N1 NL2 N2 NL3]: V) QS).CX(N1, N2) = simplify((q[NL1 N1 NL2 N2 NL3]: M x V)) QS
+    if M1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x) I (x) iGates(size(NL3))
+    /\ M2 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x) X (x) iGates(size(NL3))
+    /\ M := M1 + M2 .
 
-    ceq ((q[NL1 N2 NL2 N1 NL3]: M) QS).CX(N1, N2) = simplify((q[NL1 N2 NL2 N1 NL3]: G x M)) QS
-    if G1 := iGates(size(NL1)) (x) I (x) iGates(size(NL2)) (x) B0 (x) iGates(size(NL3))
-    /\ G2 := iGates(size(NL1)) (x) X (x) iGates(size(NL2)) (x) B3 (x) iGates(size(NL3))
-    /\ G := G1 + G2 .
+    ceq ((q[NL1 N2 NL2 N1 NL3]: V) QS).CX(N1, N2) = simplify((q[NL1 N2 NL2 N1 NL3]: M x V)) QS
+    if M1 := iGates(size(NL1)) (x) I (x) iGates(size(NL2)) (x) B0 (x) iGates(size(NL3))
+    /\ M2 := iGates(size(NL1)) (x) X (x) iGates(size(NL2)) (x) B3 (x) iGates(size(NL3))
+    /\ M := M1 + M2 .
 
     --- measurement
     sort StateProb .
@@ -313,45 +346,26 @@ fmod SYMBOLIC-REASONING is
 
     --- applying a measurement with a specific matrix at a specific position
     op _.M(_,_) : Qubit Matrix Nat -> StateProb .
-    ceq ((q[NL1 N NL2]: M1) QS).M(P, N)
-    =   if Prob == 0 and-then M3 == O then {qstate: (simplify(q[NL1 N NL2]: M3) QS), prob: Prob}
+    ceq ((q[NL1 N NL2]: V1) QS).M(P, N)
+    =   if Prob == 0 and-then V3 == O then {qstate: (simplify(q[NL1 N NL2]: V3) QS), prob: Prob}
         else {
             qstate: (
-                simplify(q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . M3))
+                simplify(q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . V3))
                 QS
             ), prob: Prob
         }
         fi
-    if M2 := ((M1)^+) x
-            ((iGates(size(NL1)) (x) P (x) iGates(size(NL2)))^+) x
-            (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x
-            M1
-    /\ Prob := scalar(M2)
-    /\ M3 := (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x M1 .
+    if V2 := ((iGates(size(NL1)) (x) P (x) iGates(size(NL2)))^+) x
+             (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x
+             V1
+    /\ Prob := SP(V1, V2)
+    /\ V3 := (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x V1 .
     --- qstate: ((q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . M3)) QS), prob: Prob
-
-    --- obtaining scalar for inner product:  S . I (x) I (x) I -> S
-    op scalar : Matrix -> Scalar .
-    eq scalar(O) = 0 .
-    eq scalar(S . M) = if isIdens(M) then S else errS fi .
-    eq scalar(M) = if isIdens(M) then 1 else errS fi .
-
-    --- I (x) I (x) I ...
-    op isIdens : Matrix -> Bool .
-    eq isIdens(M1 (x) M2) = isIdens(M1) and isIdens(M2) .
-    eq isIdens(|1>) = false .
-    eq isIdens(|0>) = false .
-    eq isIdens(I) = true .
 
     --- N -> I (x) I (x) ...
     op iGates : Nat -> Matrix .
     eq iGates(0) = nil .
     ceq iGates(N) = I (x) iGates(sd(N, 1)) if N > 0 .
-
-    --- not zero vector
-    op isZero : Qubit -> Bool .
-    eq isZero((q[NL1 N NL2]: O) QS) = true .
-    eq isZero(QS) = false [owise] .
 
     --- simplify a multiple qubit
     op simplify : Qubit -> Qubit .
