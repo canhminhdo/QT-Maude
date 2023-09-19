@@ -284,7 +284,7 @@ fmod SYMBOLIC-REASONING is
     pr QUBIT .
 
     vars N N1 N2 N3 N4 : Nat .
-    vars M M1 M2 M3 G G1 G2 P : Matrix .
+    vars M M1 M2 M3 P : Matrix .
     vars NL NL1 NL2 NL3 NL4 : NatList .
     var QS : Qubit .
     vars S S1 S2 Prob : Scalar .
@@ -294,7 +294,7 @@ fmod SYMBOLIC-REASONING is
     --- applying hadmard gate
     op _.H(_) : Qubit Nat -> Qubit .
     ceq ((q[NL1 N NL2]: V) QS).H(N) = (q[NL1 N NL2]: M x V) QS
-    if M := iGates(size(NL1)) (x) H (x) iGates(size(NL2)) .
+    if M := I[size(NL1)] (x) H (x) I[size(NL2)] .
 
     --- applying I gate
     op _.I(_) : Qubit Nat -> Qubit .
@@ -303,37 +303,37 @@ fmod SYMBOLIC-REASONING is
     --- applying X gate
     op _.X(_) : Qubit Nat -> Qubit .
     ceq ((q[NL1 N NL2]: V) QS).X(N) = (q[NL1 N NL2]: M x V) QS
-    if M := iGates(size(NL1)) (x) X (x) iGates(size(NL2)) .
+    if M := I[size(NL1)] (x) X (x) I[size(NL2)] .
 
     --- applying Y gate
     op _.Y(_) : Qubit Nat -> Qubit .
     ceq ((q[NL1 N NL2]: V) QS).Y(N) = (q[NL1 N NL2]: M x V) QS
-    if M := iGates(size(NL1)) (x) Y (x) iGates(size(NL2)) .
+    if M := I[size(NL1)] (x) Y (x) I[size(NL2)] .
 
     --- applying Z gate
     op _.Z(_) : Qubit Nat -> Qubit .
     ceq ((q[NL1 N NL2]: V) QS).Z(N) = (q[NL1 N NL2]: M x V) QS
-    if M := iGates(size(NL1)) (x) Z (x) iGates(size(NL2)) .
+    if M := I[size(NL1)] (x) Z (x) I[size(NL2)] .
 
     --- applying CX gate
     op _.CX(_,_) : Qubit Nat Nat -> Qubit .
     ceq ((q[NL1 N1 NL2]: V1) (q[NL3 N2 NL4]: V2) QS).CX(N1, N2)
     = simplify((q[NL1 N1 NL2 NL3 N2 NL4]: M x V)) QS
     if V := V1 (x) V2
-    /\ M1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x)
-            iGates(size(NL3)) (x) I (x) iGates(size(NL4))
-    /\ M2 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x)
-            iGates(size(NL3)) (x) X (x) iGates(size(NL4))
+    /\ M1 := I[size(NL1)] (x) B0 (x) I[size(NL2)] (x)
+            I[size(NL3)] (x) I (x) I[size(NL4)]
+    /\ M2 := I[size(NL1)] (x) B3 (x) I[size(NL2)] (x)
+            I[size(NL3)] (x) X (x) I[size(NL4)]
     /\ M := M1 + M2 .
 
     ceq ((q[NL1 N1 NL2 N2 NL3]: V) QS).CX(N1, N2) = simplify((q[NL1 N1 NL2 N2 NL3]: M x V)) QS
-    if M1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x) I (x) iGates(size(NL3))
-    /\ M2 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x) X (x) iGates(size(NL3))
+    if M1 := I[size(NL1)] (x) B0 (x) I[size(NL2)] (x) I (x) I[size(NL3)]
+    /\ M2 := I[size(NL1)] (x) B3 (x) I[size(NL2)] (x) X (x) I[size(NL3)]
     /\ M := M1 + M2 .
 
     ceq ((q[NL1 N2 NL2 N1 NL3]: V) QS).CX(N1, N2) = simplify((q[NL1 N2 NL2 N1 NL3]: M x V)) QS
-    if M1 := iGates(size(NL1)) (x) I (x) iGates(size(NL2)) (x) B0 (x) iGates(size(NL3))
-    /\ M2 := iGates(size(NL1)) (x) X (x) iGates(size(NL2)) (x) B3 (x) iGates(size(NL3))
+    if M1 := I[size(NL1)] (x) I (x) I[size(NL2)] (x) B0 (x) I[size(NL3)]
+    /\ M2 := I[size(NL1)] (x) X (x) I[size(NL2)] (x) B3 (x) I[size(NL3)]
     /\ M := M1 + M2 .
 
     --- measurement
@@ -355,18 +355,18 @@ fmod SYMBOLIC-REASONING is
             ), prob: Prob
         }
         fi
-    if V2 := ((iGates(size(NL1)) (x) P (x) iGates(size(NL2)))^+) x
-             (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x
+    if V2 := ((I[size(NL1)] (x) P (x) I[size(NL2)])^+) x
+             (I[size(NL1)] (x) P (x) I[size(NL2)]) x
              V1
     /\ Prob := SP(V1, V2)
-    /\ V3 := (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x V1 .
+    /\ V3 := (I[size(NL1)] (x) P (x) I[size(NL2)]) x V1 .
     --- qstate: ((q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . M3)) QS), prob: Prob
 
     --- N -> I (x) I (x) ...
-    op iGates : Nat -> Matrix .
-    eq iGates(0) = nil .
-    ceq iGates(N) = I (x) iGates(sd(N, 1)) if N > 0 .
-
+    op I[_] : Nat -> Matrix .
+    eq I[0] = nil .
+    ceq I[N] = I (x) I[sd(N, 1)] if N > 0 .
+    
     --- simplify a multiple qubit
     op simplify : Qubit -> Qubit .
     eq simplify(QS) = simplifyEPR(simplifyOne(QS)) .
