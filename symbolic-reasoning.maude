@@ -2,8 +2,7 @@ fmod SCALAR is
     pr CONVERSION .
     pr EXT-BOOL .
 
-    sort Scalar .
-    sort iNumber .
+    sorts Scalar iNumber .
     subsort Rat iNumber < Scalar .
 
     --- imaginary unit
@@ -31,7 +30,7 @@ fmod SCALAR is
 
     vars R R1 R2 : Rat .
     vars S S1 S2 S3 S4 : Scalar .
-    vars N : Nat .
+    var N : Nat .
 
     --- imaginary properties
     eq i .* i = -1 .
