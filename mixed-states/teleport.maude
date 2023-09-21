@@ -1,0 +1,65 @@
+in quantum-circuits.maude
+
+mod TELEPORT is
+    pr CIRCUIT .
+
+    vars S : Scalar .
+
+    ops a b : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    op PSI : -> Vector .
+    eq PSI = a . |0> + b . |1> .
+    
+    op ESL : -> Ensemble .
+    eq ESL = {(a . |0> + b . |1>) (x) |0>  (x) |0>, 1} .
+
+    op init : -> Config .
+    eq init = {
+        (#qbits: findN(ESL))
+        (mState: convert(ESL))
+        (actions: (H(1) CX(1, 2) CX(0, 1) H(0) M(0) M(1) (c[1] == 1 ? X(2)) (c[0] == 1 ? Z(2))))
+        (prob: 1)
+        (bits: empty)
+        (isEnd: false)
+    } .
+endm
+
+load model-checker .
+
+mod TELEPORT-PREDS is
+    pr TELEPORT .
+    inc SATISFACTION .
+
+    subsort Config < State .
+
+    var OCs : Soup{OComp} .
+    var PROP : Prop .
+    var MS : MixedState .
+    var Prob : Scalar .
+    var N : Nat .
+
+    op isSuccess : -> Prop .
+    eq {(isEnd: true) (mState: MS) (prob: Prob) (#qbits: N) OCs} |= isSuccess
+    = Prob > 0 implies tr[1]((tr[0](MS, N)), N) == (I (x) I (x) (PSI x (PSI)^+)) .
+    eq {OCs} |= PROP = false [owise] .
+endm
+
+mod TELEPORT-CHECK is
+    inc TELEPORT-PREDS .
+    inc MODEL-CHECKER .
+    inc LTL-SIMPLIFIER .
+
+    op teleProp : -> Formula .
+    eq teleProp = <> isSuccess .
+endm
+
+in ../debug.maude
+
+red modelCheck(init, teleProp) .
+
+--- search in TELEPORT : init =>* {(qstate: Q:Qubit) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}}
+--- such that P:Scalar > 0 implies qubitAt(Q:Qubit, 2) == qubitAt(qstate(init), 0) .
+
+--- red getState(getState((initQState).H(1).CX(1, 2).CX(0, 1).H(0).M(P0, 0)).M(P0, 1)) .

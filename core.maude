@@ -144,13 +144,16 @@ fmod MATRIX is
     op (_)^+ : Matrix -> Matrix [prec 30] .
     --- scalr product
     op SP(_,_) : Vector Vector -> Scalar .
+    op SP(_,_) : Matrix Matrix -> Scalar .
 
     vars M M1 M2 M3 M4 : Matrix .
-    vars V1 V2 V3 : Vector .
+    vars V V1 V2 V3 : Vector .
     vars S S1 S2 : Scalar .
     vars K1 K2 : Ket .
 
     --- scalar product
+    eq SP(V, O) = 0 .
+    eq SP(O, V) = 0 .
     eq SP(|0>, |0>) = 1 .
     eq SP(|0>, |1>) = 0 .
     eq SP(|1>, |0>) = 0 .

@@ -1,0 +1,66 @@
+in symbolic-reasoning.maude
+
+fmod SOUP {D :: TRIV} is
+    sort Soup{D} .
+    subsort D$Elt < Soup{D} .
+    op empty : -> Soup{D} [ctor] .
+    op __ : Soup{D} Soup{D} -> Soup{D} [ctor assoc comm id: empty] .
+endfm
+
+fmod OCOMP is
+    pr SYMBOLIC-REASONING .
+    pr BOOL .
+    sort OComp .
+    op (mState:_) : MixedState -> OComp [ctor] .
+    op (#qbits:_) : Nat -> OComp [ctor] .
+    op (bits:_) : BitMap -> OComp [ctor] .
+    op (prob:_) :  Scalar -> OComp [ctor] .
+    op (actions:_) : ActionList -> OComp [ctor] .
+    op (isEnd:_) : Bool -> OComp [ctor] .
+endfm
+
+view OComp from TRIV to OCOMP is
+    sort Elt to OComp .
+endv
+
+fmod CONFIG is
+    pr SOUP{OComp} .
+    sort Config .
+    op {_} : Soup{OComp} -> Config [ctor] .
+endfm
+
+mod CIRCUIT is
+    pr CONFIG .
+
+    vars AL AL' : ActionList .
+    vars A A' : Action .
+    vars OCs : Soup{OComp} .
+    vars N N' N1 N2 : Nat .
+    vars Prob Prob' : Scalar .
+    vars B : Bool .
+    vars BM : BitMap .
+    vars MS MS' : MixedState .
+    
+    crl [U] : {(mState: MS) (actions: (A AL)) (#qbits: N) OCs}
+    => {(mState: MS') (actions: AL) (#qbits: N) OCs} 
+    if isBasicAction(A)
+    /\ MS' := unitary(MS, A, N) .
+
+    --- measurement with z-basis states (the standard basis)
+    crl [M0] : {(mState: MS) (actions: (M(N') AL)) (prob: Prob) (bits: BM) (#qbits: N) OCs}
+    => {(mState: MS') (actions: AL) (prob: (Prob .* Prob')) (bits: insert(N', 0, BM)) (#qbits: N) OCs}
+    if {mState: MS', prob: Prob'} := measure(MS, N, P0, N') .
+
+    crl [M1] : {(mState: MS) (actions: (M(N') AL)) (prob: Prob) (bits: BM) (#qbits: N) OCs}
+    => {(mState: MS') (actions: AL) (prob: (Prob .* Prob')) (bits: insert(N', 1, BM)) (#qbits: N) OCs}
+    if {mState: MS', prob: Prob'} := measure(MS, N, P1, N') .
+
+    rl [cif] : {(bits: ((N |-> N1), BM)) (actions: ((c[N] == N2 ? AL') AL)) OCs}
+    => {(bits: ((N |-> N1), BM)) (actions: ((if (N1 == N2) then AL' else nil fi) AL)) OCs} .
+
+    rl [end] : {(actions: nil) (isEnd: false) OCs}
+    => {(actions: nil) (isEnd: true) OCs} .
+
+    rl [stutter]: {(isEnd: true) OCs} => {(isEnd: true) OCs} .
+endm
+

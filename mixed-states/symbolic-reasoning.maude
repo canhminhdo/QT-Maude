@@ -1,0 +1,366 @@
+in ../core.maude
+
+fmod STATES-AND-PROB is
+    pr MATRIX .
+
+    sort State&Prob .
+    op {_,_} : Vector Scalar -> State&Prob . 
+endfm
+
+view State&Prob from TRIV to STATES-AND-PROB is
+  sort Elt to State&Prob .
+endv
+
+fmod ENSEMBLE is
+  protecting SET{State&Prob} * (sort NeSet{State&Prob} to NeEnsemble, sort Set{State&Prob} to Ensemble) .
+endfm
+
+
+fmod MIXED-STATES is
+    pr MATRIX .
+    pr ENSEMBLE .
+
+    sort MixedState QState .
+    subsort Matrix < MixedState .
+
+    --- empty qubit
+    op emp : -> QState [ctor] .
+    --- error qubit
+    op errQ : -> QState [ctor] .
+    --- mixed state
+    op (mixedState:_) : MixedState -> QState .
+    --- number of qubits
+    op (#qubits:_) : Nat -> QState .
+    op __ : QState QState -> QState [ctor assoc comm id: emp] .
+endfm
+
+fmod BIT is
+    pr NAT .
+    pr MAP{Nat,Nat} * (
+        sort Entry{Nat,Nat} to EntryBit,
+        sort Map{Nat,Nat} to BitMap
+    ) .
+    sort Bit .
+    --- classical bit at index i
+    op c[_] : Nat -> Bit .
+endfm
+
+fmod ACTION is
+    pr NAT .
+    sort Action .
+    op I`(_`) : Nat -> Action .
+    op X`(_`) : Nat -> Action .
+    op Y`(_`) : Nat -> Action .
+    op Z`(_`) : Nat -> Action .
+    op H`(_`) : Nat -> Action .
+    op S`(_`) : Nat -> Action .
+    op T`(_`) : Nat -> Action .
+    op CX`(_,_`) : Nat Nat -> Action .
+    op CY`(_,_`) : Nat Nat -> Action .
+    op CZ`(_,_`) : Nat Nat -> Action .
+    op SWAP`(_,_`) : Nat Nat -> Action .
+    op CCX`(_,_,_`) : Nat Nat Nat -> Action .
+    op CCZ`(_,_,_`) : Nat Nat Nat -> Action .
+    op CSWAP`(_,_,_`) : Nat Nat Nat -> Action .
+    --- measurement
+    op M`(_`) : Nat -> Action .
+endfm
+
+view Action from TRIV to ACTION is
+    sort Elt to Action .
+endv
+
+fmod ACTION-LIST is
+    pr BIT .
+    pr LIST{Action} * (
+        sort NeList{Action} to NeActionList,
+        sort List{Action} to ActionList
+    ) .
+    op _==_?_ : Bit Nat ActionList -> Action .
+    op _==_?_:_ : Bit Nat ActionList ActionList -> Action .
+
+    op isBasicAction : Action -> Bool .
+    eq isBasicAction(M(N:Nat)) = false .
+    eq isBasicAction(B:Bit == N:Nat ? AL:ActionList) = false .
+    eq isBasicAction(B:Bit == N:Nat ? AL:ActionList : AL':ActionList) = false .
+    eq isBasicAction(A:Action) = true .
+endfm
+
+fmod QUANTUM-GATES is
+    pr ACTION-LIST .
+    pr MATRIX .
+
+    var BL : Bool .
+    var S : Scalar .
+    vars A : Action .
+    vars AL AL' : ActionList .
+    vars N N' N1 N2 N3 N4 : Nat .
+    vars M M' M1 M2 M3 M4 M5 : Matrix .
+    vars V V' Phi : Matrix .
+    vars B0' B1' B2' B3' : Matrix .
+
+    --- N -> I (x) I (x) ...
+    op I[_] : Nat -> Matrix .
+    eq I[0] (x) M = M .
+    eq M (x) I[0] = M .
+    ceq I[N] = I (x) I[sd(N, 1)] if N > 0 .
+
+    op buildGate1 : Nat Nat Matrix -> Matrix .
+    op buildGate2 : Nat Nat Nat Matrix Matrix -> Matrix . 
+    op buildGate3 : Nat Nat Nat Nat Matrix Matrix Matrix -> Matrix .
+    --- suppose that N1 < N2
+    ceq buildGate1(N1, N2, M) = I[N1] (x) M (x) I[N2 - N1 - 1]
+    if N1 < N2 .
+    --- suppose that N1 < N2 < N3
+    ceq buildGate2(N1, N2, N3, M1, M2) = I[N1] (x) M1 (x) I[N2 - N1 - 1] (x) M2 (x) I[N3 - N2 - 1]
+    if N1 < N2 /\ N2 < N3 .
+    --- suppose that N1 < N2 < N3 < N4
+    ceq buildGate3(N1, N2, N3, N4, M1, M2, M3) = I[N1] (x) M1 (x) I[N2 - N1 - 1] (x) M2 (x) I[N3 - N2 - 1] (x) M3 (x) I[N4 - N3 - 1]
+    if N1 < N2 /\ N2 < N3 /\ N3 < N4 .
+
+    --- mapping an action to an actual unitary gate
+    op buildUnitary : Action Nat -> Matrix .
+    --- I gate
+    eq buildUnitary((I(N1)), N2) = I[N2] .
+    --- X gate
+    eq buildUnitary((X(N1)), N2) = buildGate1(N1, N2, X) .
+    --- Y gate
+    eq buildUnitary((Y(N1)), N2) = buildGate1(N1, N2, Y) .
+    --- Z gate
+    eq buildUnitary((Z(N1)), N2) = buildGate1(N1, N2, Z) .
+    --- H gate
+    eq buildUnitary((H(N1)), N2) = buildGate1(N1, N2, H) .
+    --- S gate
+    eq buildUnitary((S(N1)), N2) = buildGate1(N1, N2, S) .
+    --- T gate
+    eq buildUnitary((T(N1)), N2) = buildGate1(N1, N2, T) .
+    --- CX gate
+    --- CX = B0(x)I + B3(x)X
+    --- suppose that N1 < N2
+    ceq buildUnitary((CX(N1, N2)), N3) = M1 + M2
+    if N1 < N2
+    /\ M1 := buildGate2(N1, N2, N3, B0, I)
+    /\ M2 := buildGate2(N1, N2, N3, B3, X) .
+    --- suppose that N1 > N2
+    ceq buildUnitary((CX(N1, N2)), N3) = M1 + M2
+    if N1 > N2
+    /\ M1 := buildGate2(N2, N1, N3, I, B0)
+    /\ M2 := buildGate2(N2, N1, N3, X, B3) .
+    --- CY = B0(x)I + B3(x)Y .
+    --- suppose that N1 < N2
+    ceq buildUnitary((CY(N1, N2)), N3) = M1 + M2
+    if N1 < N2
+    /\ M1 := buildGate2(N1, N2, N3, B0, I)
+    /\ M2 := buildGate2(N1, N2, N3, B3, Y) .
+    --- suppose that N1 > N2
+    ceq buildUnitary((CY(N1, N2)), N3) = M1 + M2
+    if N1 > N2
+    /\ M1 := buildGate2(N2, N1, N3, I, B0)
+    /\ M2 := buildGate2(N2, N1, N3, Y, B3) .
+    --- CZ gate
+    --- CX = B0(x)I + B3(x)Z
+    --- suppose that N1 < N2
+    ceq buildUnitary((CZ(N1, N2)), N3) = M1 + M2
+    if N1 < N2
+    /\ M1 := buildGate2(N1, N2, N3, B0, I)
+    /\ M2 := buildGate2(N1, N2, N3, B3, Z) .
+    --- suppose that N1 > N2
+    ceq buildUnitary((CZ(N1, N2)), N3) = M1 + M2
+    if N1 > N2
+    /\ M1 := buildGate2(N2, N1, N3, I, B0)
+    /\ M2 := buildGate2(N2, N1, N3, Z, B3) .
+    --- SWAP gate
+    --- SWAP = CX(N1, N2) x CX(N2, N1) x CX(N1, N2)
+    ceq buildUnitary((SWAP(N1, N2)), N3) = M1 x M2 x M1
+    if M1 := buildUnitary(CX(N1, N2), N3)
+    /\ M2 := buildUnitary(CX(N2, N1), N3) .
+    --- CCX gate 
+    --- CCX = B0(x)I(x)I + B3(x)B0(x)I + B3(x)B3(x)B1 + B3(x)B3(x)B2
+    --- suppose that N1 < N2 < N3
+    ceq buildUnitary((CCX(N1, N2, N3)), N4) = M1 + M2 + M3 + M4
+    if N1 < N2 /\ N2 < N3
+    /\ M1 := buildGate3(N1, N2, N3, N4, B0, I, I)
+    /\ M2 := buildGate3(N1, N2, N3, N4, B3, B0, I)
+    /\ M3 := buildGate3(N1, N2, N3, N4, B3, B3, B1)
+    /\ M4 := buildGate3(N1, N2, N3, N4, B3, B3, B2) .
+    --- suppose that N1 > N2 > N3
+    ceq buildUnitary((CCX(N1, N2, N3)), N4) = M1 + M2 + M3 + M4
+    if N1 > N2 /\ N2 > N3
+    /\ M1 := buildGate3(N3, N2, N1, N4, I, I, B0)
+    /\ M2 := buildGate3(N3, N2, N1, N4, I, B0, B3)
+    /\ M3 := buildGate3(N3, N2, N1, N4, B1, B3, B3)
+    /\ M4 := buildGate3(N3, N2, N1, N4, B2, B3, B3) .
+    --- CCZ gate 
+    --- CCZ = B0(x)I(x)I + B3(x)B0(x)I + B3(x)B3(x)B0 + (-1) . B3(x)B3(x)B3
+    --- suppose that N1 < N2 < N3
+    ceq buildUnitary((CCZ(N1, N2, N3)), N4) = M1 + M2 + M3 + (-1) . M4
+    if N1 < N2 /\ N2 < N3
+    /\ M1 := buildGate3(N1, N2, N3, N4, B0, I, I)
+    /\ M2 := buildGate3(N1, N2, N3, N4, B3, B0, I)
+    /\ M3 := buildGate3(N1, N2, N3, N4, B3, B3, B0)
+    /\ M4 := buildGate3(N1, N2, N3, N4, B3, B3, B3) .
+    --- suppose that N1 > N2 > N3
+    ceq buildUnitary((CCZ(N1, N2, N3)), N4) = M1 + M2 + M3 + (-1) . M4
+    if N1 > N2 /\ N2 > N3
+    /\ M1 := buildGate3(N3, N2, N1, N4, I, I, B0)
+    /\ M2 := buildGate3(N3, N2, N1, N4, I, B0, B3)
+    /\ M3 := buildGate3(N3, N2, N1, N4, B0, B3, B3)
+    /\ M4 := buildGate3(N3, N2, N1, N4, B3, B3, B3) .
+    --- CSWAP gate
+    --- CSWAP = B0(x)I(x)I + B3(x)B0(x)B0 + B3(x)B1(x)B2 + B3(x)B2(x)B1 + B3(x)B3(x)B3
+    --- suppose that N1 < N2 < N3
+    ceq buildUnitary((CSWAP(N1, N2, N3)), N4) = M1 + M2 + M3 + M4 + M5
+    if N1 < N2 /\ N2 < N3
+    /\ M1 := buildGate3(N1, N2, N3, N4, B0, I, I)
+    /\ M2 := buildGate3(N1, N2, N3, N4, B3, B0, B0)
+    /\ M3 := buildGate3(N1, N2, N3, N4, B3, B1, B2)
+    /\ M4 := buildGate3(N1, N2, N3, N4, B3, B2, B1) 
+    /\ M5 := buildGate3(N1, N2, N3, N4, B3, B3, B3) .
+    --- suppose that N1 > N2 > N3
+    ceq buildUnitary((CSWAP(N1, N2, N3)), N4) = M1 + M2 + M3 + M4 + M5
+    if N1 > N2 /\ N2 > N3
+    /\ M1 := buildGate3(N3, N2, N1, N4, I, I, B0)
+    /\ M2 := buildGate3(N3, N2, N1, N4, B0, B0, B3)
+    /\ M3 := buildGate3(N3, N2, N1, N4, B2, B1, B3)
+    /\ M4 := buildGate3(N3, N2, N1, N4, B1, B2, B3) 
+    /\ M5 := buildGate3(N3, N2, N1, N4, B3, B3, B3) .
+
+    op findN : ActionList -> Nat .
+    op findN* : ActionList Nat -> Nat .
+    eq findN(AL) = findN*(AL, 0) .
+    eq findN*(nil, N) = N + 1 .
+    eq findN*(I(N1) AL, N2) = findN*(AL, max(N1, N2)) .
+    eq findN*(X(N1) AL, N2) = findN*(AL, max(N1, N2)) .
+    eq findN*(Y(N1) AL, N2) = findN*(AL, max(N1, N2)) .
+    eq findN*(Z(N1) AL, N2) = findN*(AL, max(N1, N2)) .
+    eq findN*(H(N1) AL, N2) = findN*(AL, max(N1, N2)) .
+    eq findN*(S(N1) AL, N2) = findN*(AL, max(N1, N2)) .
+    eq findN*(T(N1) AL, N2) = findN*(AL, max(N1, N2)) .
+    eq findN*(CX(N1, N2) AL, N3) = findN*(AL, max(max(N1, N2), N3)) .
+    eq findN*(CY(N1, N2) AL, N3) = findN*(AL, max(max(N1, N2), N3)) .
+    eq findN*(CZ(N1, N2) AL, N3) = findN*(AL, max(max(N1, N2), N3)) .
+    eq findN*(SWAP(N1, N2) AL, N3) = findN*(AL, max(max(N1, N2), N3)) .
+    eq findN*(CCX(N1, N2, N3) AL, N4) = findN*(AL, max(max(max(N1, N2), N3), N4)) .
+    eq findN*(CCZ(N1, N2, N3) AL, N4) = findN*(AL, max(max(max(N1, N2), N3), N4)) .
+    eq findN*(CSWAP(N1, N2, N3) AL, N4) = findN*(AL, max(max(max(N1, N2), N3), N4)) .
+endfm
+
+fmod SYMBOLIC-REASONING is
+    pr MIXED-STATES .
+    pr QUANTUM-GATES .
+    
+    vars N N' N1 N2 : Nat .
+    vars M U P : Matrix .
+    vars MS MS' : MixedState .
+    vars V V' : Vector .
+    vars S Prob : Scalar .
+    vars QS : QState .
+    vars ES : Ensemble .
+    vars A : Action .
+    vars K : Ket .
+
+    --- prepare a basis vector V
+    --- N1 denote the i-th qubit, while N2 is the number of qubits
+    op basis : Nat Nat -> Matrix .
+    op basis : Nat Nat Matrix -> Matrix .
+    eq basis(N1, N2) = basis(N1, N2, nil) .
+    ceq basis(N1, N2, M) = if (N1 & 1) == 0 then
+        basis(N1 >> 1, N2 - 1, |0> (x) M)
+    else 
+        basis(N1 >> 1, N2 - 1, |1> (x) M)
+    fi
+    if N2 > 0 .
+    eq basis(N1, 0, M) = M .
+
+    --- the number of qubits
+    op findN : Vector -> Nat .
+    eq findN(V + V') = findN(V) .
+    eq findN(S . V) = findN(V) .
+    eq findN(K (x) V) = 1 + findN(V) .
+    eq findN(K) = 1 .
+
+    op findN : Ensemble -> Nat .
+    eq findN(({V, S}, ES)) = findN(V) .
+    eq findN(ES) = 0 [owise] .
+
+    --- convert to mixed states
+    op convert : Ensemble -> MixedState .
+    ceq convert(({V, S}, ES)) = M + convert(ES) 
+    if M := S . (V x (V)^+) .
+    eq convert(empty) = nil .
+
+    --- initialize
+    op initialize : Ensemble -> QState .
+    eq initialize(ES) = (mixedState: convert(ES)) (#qubits: findN(ES)) .
+
+    --- the trace of mixed states
+    op tr : QState -> Scalar .
+    op tr : MixedState Nat -> Scalar .
+
+    eq tr((mixedState: MS) (#qubits: N) QS) = tr(MS, N) .
+    op tr : MixedState Nat Nat -> Scalar .
+    eq tr(MS, N) = tr(MS, N, 2 ^ N) .
+    eq tr(MS, N1, 0) = 0 .
+    ceq tr(MS, N1, N2) = S .+ tr(MS, N1, sd(N2, 1))
+    if N2 > 0 
+    /\ V := basis(N2 - 1, N1)
+    /\ S := SP(V, MS x V) 
+    [print "N1 = " N1 "\nN2 = " N2 "\nV = " V "\nS = " S]
+    .
+    
+    --- the partial trace of mixed states
+    --- remove subsystem at a specific index
+    op tr[_](_): Nat QState -> QState .
+    op tr[_](_,_): Nat MixedState Nat -> MixedState .
+    op tr[_](_,_,_): Nat MixedState Nat Nat -> MixedState .
+    
+    ceq tr[N']((mixedState: MS) (#qubits: N) QS) = (mixedState: MS') (#qubits: N) QS
+    if MS' := tr[N'](MS, N) .
+
+    eq tr[N'](MS, N) = tr[N'](MS, N, 2 ^ 1) .
+
+    eq tr[N'](MS, N1, 0) = nil .
+    ceq tr[N'](MS, N1, N2) = ((M)^+ x MS x M) + tr[N'](MS, N1, sd(N2, 1))
+    if N2 > 0
+    /\ V := basis(N2 - 1, 1)
+    /\ M := buildGate1(N', N1, V) .
+
+    --- applying quantum gates
+    op unitary : QState Action -> QState .
+    ceq unitary((mixedState: MS) (#qubits: N) QS, A) = (mixedState: MS') (#qubits: N) QS
+    if U := buildUnitary(A, N)
+    /\ MS' := U x MS x (U)^+ .
+
+    op unitary : MixedState Action Nat -> MixedState .
+    ceq unitary(MS, A, N) = MS'
+    if U := buildUnitary(A, N)
+    /\ MS' := U x MS x (U)^+ .
+
+    --- applying measurement
+    --- measurement
+    sort MixedStateProb .
+    op {mState:_, prob:_} : MixedState Scalar -> MixedStateProb .
+    op getState : MixedStateProb -> MixedState .
+    op getProb : MixedStateProb -> Scalar .
+    eq getState({mState: MS, prob: Prob}) = MS .
+    eq getProb({mState: MS, prob: Prob}) = Prob .
+
+    op measure : QState Matrix Nat -> QState .
+    ceq measure((mixedState: MS) (#qubits: N) QS, P, N') = (mixedState: MS') (#qubits: N) QS
+    if M := buildGate1(N', N, P)
+    /\ S := tr((M)^+ x M x MS, N)
+    /\ MS' := (1 ./ S) . (M x MS x (M)^+) .
+
+    op measure : MixedState Nat Matrix Nat -> MixedStateProb .
+    ceq measure(MS, N, P, N') = {mState: MS', prob: S}
+    if M := buildGate1(N', N, P)
+    /\ S := tr((M)^+ x M x MS, N)
+    /\ MS' := (1 ./ S) . (M x MS x (M)^+) .
+endfm
+
+--- in debug.maude .
+
+--- red initialize({|0> (x) |1> (x) |0>, 1}) .
+--- red tr(initialize({|0> (x) |1> (x) |0>, 1})) .
+--- red tr[0](initialize({|0> (x) |1> (x) |0>, 1})) .
+--- red tr[1](tr[0](initialize({|0> (x) |1> (x) |0>, 1}))) .

@@ -1,0 +1,104 @@
+in quantum-circuits.maude
+
+mod SUPERDENSE is
+    pr CIRCUIT .
+
+    op ES : -> Ensemble .
+    eq ES = { |0> (x) |0>, 1} .
+
+    op init0 : -> Config .
+    eq init0 = {
+        (#qbits: findN(ES))
+        (mState: convert(ES))
+        (actions: (H(0) CX(0, 1) I(0) CX(0, 1) H(0) M(0) M(1)))
+        (prob: 1)
+        (bits: empty)
+        (isEnd: false)
+    } .
+
+    op init1 : -> Config .
+    eq init1 = {
+        (#qbits: findN(ES))
+        (mState: convert(ES))
+        (actions: (H(0) CX(0, 1) X(0) CX(0, 1) H(0) M(0) M(1)))
+        (prob: 1)
+        (bits: empty)
+        (isEnd: false)
+    } .
+
+    op init2 : -> Config .
+    eq init2 = {
+        (#qbits: findN(ES))
+        (mState: convert(ES))
+        (actions: (H(0) CX(0, 1) Y(0) CX(0, 1) H(0) M(0) M(1)))
+        (prob: 1)
+        (bits: empty)
+        (isEnd: false)
+    } .
+
+    op init3 : -> Config .
+    eq init3 = {
+        (#qbits: findN(ES))
+        (mState: convert(ES))
+        (actions: (H(0) CX(0, 1) Z(0) CX(0, 1) H(0) M(0) M(1)))
+        (prob: 1)
+        (bits: empty)
+        (isEnd: false)
+    } .
+endm
+
+load model-checker .
+
+mod SUPERDENSE-PREDS is
+    pr SUPERDENSE .
+    inc SATISFACTION .
+
+    subsort Config < State .
+
+    var OCs : Soup{OComp} .
+    var PROP : Prop .
+    var MS : MixedState .
+    var Prob : Scalar .
+    vars BM : BitMap .
+
+    ops isGateI isGateX isGateY isGateZ : -> Prop .
+
+    eq {(isEnd: true) (bits: BM) (prob: Prob) OCs} |= isGateI
+    = (Prob > 0) implies (BM[0] == 0 and BM[1] == 0) .
+
+    eq {(isEnd: true) (bits: BM) (prob: Prob) OCs} |= isGateX
+    = (Prob > 0) implies (BM[0] == 0 and BM[1] == 1) .
+
+    eq {(isEnd: true) (bits: BM) (prob: Prob) OCs} |= isGateY
+    = (Prob > 0) implies (BM[0] == 1 and BM[1] == 1) .
+
+    eq {(isEnd: true) (bits: BM) (prob: Prob) OCs} |= isGateZ
+    = (Prob > 0) implies (BM[0] == 1 and BM[1] == 0) .
+
+    eq {OCs} |= PROP = false [owise] .
+endm
+
+mod SUPERDENSE-CHECK is
+    inc SUPERDENSE-PREDS .
+    inc MODEL-CHECKER .
+    inc LTL-SIMPLIFIER .
+
+    ops gateIProp gateXProp gateYProp gateZProp : -> Formula .
+
+    eq gateIProp = <> isGateI .
+    eq gateXProp = <> isGateX .
+    eq gateYProp = <> isGateY .
+    eq gateZProp = <> isGateZ .
+endm
+
+in ../debug.maude
+
+red modelCheck(init0, gateIProp) .
+red modelCheck(init1, gateXProp) .
+red modelCheck(init2, gateYProp) .
+red modelCheck(init3, gateZProp) .
+
+--- search in SUPERDENSE : init0 =>* {(mState: MS:MixedState) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}} such that P:Scalar > 0 .
+--- search in SUPERDENSE : init1 =>* {(mState: MS:MixedState) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}} such that P:Scalar > 0 .
+--- search in SUPERDENSE : init2 =>* {(mState: MS:MixedState) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}} such that P:Scalar > 0 .
+--- search in SUPERDENSE : init3 =>* {(mState: MS:MixedState) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}} such that P:Scalar > 0 .
