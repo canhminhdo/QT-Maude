@@ -1,0 +1,44 @@
+Reading in file: "symbolic-reasoning.maude"
+Reading in file: "core.maude"
+==========================================
+fmod SCALAR
+==========================================
+fmod DIRAC
+==========================================
+fmod MATRIX
+Done reading in file: "core.maude"
+==========================================
+fmod STATES-AND-PROB
+==========================================
+view State&Prob
+==========================================
+fmod ENSEMBLE
+==========================================
+fmod MIXED-STATES
+==========================================
+fmod BIT
+==========================================
+fmod ACTION
+==========================================
+view Action
+==========================================
+fmod ACTION-LIST
+==========================================
+fmod QUANTUM-GATES
+==========================================
+fmod SYMBOLIC-REASONING
+Done reading in file: "symbolic-reasoning.maude"
+==========================================
+fmod SOUP
+==========================================
+fmod OCOMP
+==========================================
+view OComp
+==========================================
+fmod CONFIG
+==========================================
+mod CIRCUIT
+==========================================
+reduce in ENTAGLE-SWAP-CHECK : modelCheck(init, teleEntangle) .
+result Bool: true
+Bye.
