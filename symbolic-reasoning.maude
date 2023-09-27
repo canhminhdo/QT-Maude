@@ -27,7 +27,7 @@ fmod SYMBOLIC-REASONING is
     pr QUBIT .
 
     vars N N1 N2 N3 N4 : Nat .
-    vars M M1 M2 M3 P : Matrix .
+    vars M M1 M2 M3 M4 P : Matrix .
     vars NL NL1 NL2 NL3 NL4 : NatList .
     var QS : Qubit .
     vars S S1 S2 Prob : Scalar .
@@ -79,6 +79,37 @@ fmod SYMBOLIC-REASONING is
     /\ M2 := I[size(NL1)] (x) X (x) I[size(NL2)] (x) B3 (x) I[size(NL3)]
     /\ M := M1 + M2 .
 
+    --- applying SWAP gate
+    op _.SWAP(_,_) : Qubit Nat Nat -> Qubit .
+    ceq ((q[NL1 N1 NL2]: V1) (q[NL3 N2 NL4]: V2) QS).SWAP(N1, N2)
+    = simplify((q[NL1 N1 NL2 NL3 N2 NL4]: M x V)) QS
+    if V := V1 (x) V2
+    /\ M1 := I[size(NL1)] (x) B0 (x) I[size(NL2)] (x)
+            I[size(NL3)] (x) B0 (x) I[size(NL4)]
+    /\ M2 := I[size(NL1)] (x) B1 (x) I[size(NL2)] (x)
+            I[size(NL3)] (x) B2 (x) I[size(NL4)]
+    /\ M3 := I[size(NL1)] (x) B2 (x) I[size(NL2)] (x)
+            I[size(NL3)] (x) B1 (x) I[size(NL4)]
+    /\ M4 := I[size(NL1)] (x) B3 (x) I[size(NL2)] (x)
+            I[size(NL3)] (x) B3 (x) I[size(NL4)]
+    /\ M := 1 / 2 . (M1 + M2 + M3 + M4) .
+
+    ceq ((q[NL1 N1 NL2 N2 NL3]: V) QS).SWAP(N1, N2)
+    = simplify((q[NL1 N1 NL2 N2 NL3]: M x V)) QS
+    if M1 := I[size(NL1)] (x) B0 (x) I[size(NL2)] (x) B0 (x) I[size(NL3)]
+    /\ M2 := I[size(NL1)] (x) B1 (x) I[size(NL2)] (x) B2 (x) I[size(NL3)]
+    /\ M3 := I[size(NL1)] (x) B2 (x) I[size(NL2)] (x) B1 (x) I[size(NL3)]
+    /\ M4 := I[size(NL1)] (x) B3 (x) I[size(NL2)] (x) B3 (x) I[size(NL3)]
+    /\ M := 1 / 2 . (M1 + M2 + M3 + M4 ) .
+
+    ceq ((q[NL1 N2 NL2 N1 NL3]: V) QS).SWAP(N1, N2)
+    = simplify((q[NL1 N2 NL2 N1 NL3]: M x V)) QS
+    if M1 := I[size(NL1)] (x) B0 (x) I[size(NL2)] (x) B0 (x) I[size(NL3)]
+    /\ M2 := I[size(NL1)] (x) B1 (x) I[size(NL2)] (x) B2 (x) I[size(NL3)]
+    /\ M3 := I[size(NL1)] (x) B2 (x) I[size(NL2)] (x) B1 (x) I[size(NL3)]
+    /\ M4 := I[size(NL1)] (x) B3 (x) I[size(NL2)] (x) B3 (x) I[size(NL3)]
+    /\ M := 1 / 2 . (M1 + M2 + M3 + M4 ) .
+
     --- measurement
     sort StateProb .
     op {qstate:_, prob:_} : Qubit Scalar -> StateProb .
@@ -109,7 +140,7 @@ fmod SYMBOLIC-REASONING is
     op I[_] : Nat -> Matrix .
     eq I[0] = nil .
     ceq I[N] = I (x) I[sd(N, 1)] if N > 0 .
-    
+
     --- simplify a multiple qubit
     op simplify : Qubit -> Qubit .
     eq simplify(QS) = simplifyEPR(simplifyOne(QS)) .

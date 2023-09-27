@@ -20,6 +20,7 @@ fmod ACTION is
     op Z`(_`) : Nat -> Action .
     op H`(_`) : Nat -> Action .
     op CX`(_,_`) : Nat Nat -> Action .
+    op SWAP`(_,_`) : Nat Nat -> Action .
     op M`(_`) : Nat -> Action .
 endfm
 
@@ -102,6 +103,10 @@ mod CIRCUIT is
     crl [CX] : {(qstate: Q) (actions: (CX(N1, N2) AL)) OCs}
     => {(qstate: Q') (actions: AL) OCs}
     if Q' := (Q).CX(N1, N2).
+
+    crl [SWAP] : {(qstate: Q) (actions: (SWAP(N1, N2) AL)) OCs}
+    => {(qstate: Q') (actions: AL) OCs}
+    if Q' := (Q).SWAP(N1, N2).
 
     --- measurement with z-basis states (the standard basis)
     crl [M0] : {(qstate: Q) (actions: (M(N) AL)) (prob: Prob) (bits: BM) OCs}
