@@ -3,15 +3,15 @@ load quantum-circuits.maude
 mod GATE-TELEPORT is
     pr CIRCUIT .
 
-    var S : Scalar .
+    var C : Complex .
 
     --- defining initial states
-    ops a b c d : -> Scalar .
+    ops a b c d : -> Complex .
     eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
-    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+    eq C .* Pow(Abs(a), 2) .+ C .* Pow(Abs(b), 2) = C .
 
     eq Pow(Abs(c), 2) .+ Pow(Abs(d), 2) = 1 .
-    eq S .* Pow(Abs(c), 2) .+ S .* Pow(Abs(d), 2) = S .
+    eq C .* Pow(Abs(c), 2) .+ C .* Pow(Abs(d), 2) = C .
 
     op initQState : -> Qubit .
     eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) (q[4]: |0>) (q[5]: c . |0> + d . |1>) .
@@ -48,7 +48,7 @@ mod GATE-TELEPORT-PREDS is
     var OCs : Soup{OComp} .
     var PROP : Prop .
     var Q : Qubit .
-    var Prob : Scalar .
+    var Prob : Complex .
 
     op isSuccess : -> Prop .
     eq {(isEnd: true) (qstate: Q) (prob: Prob) OCs} |= isSuccess

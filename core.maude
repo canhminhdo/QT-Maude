@@ -1,43 +1,43 @@
-fmod SCALAR is
+fmod COMPLEX is
     pr CONVERSION .
     pr EXT-BOOL .
 
-    sorts Scalar iNumber .
-    subsort Rat iNumber < Scalar .
+    sorts Real Complex .
+    subsort Rat < Real < Complex .
 
     --- imaginary unit
-    op i : -> iNumber [ctor].
+    op i : -> Complex [ctor] .
 
     --- basic operators
-    op _.*_ : Scalar Scalar -> Scalar [comm assoc prec 32] .
-    op _./_ : Scalar Scalar -> Scalar [prec 31] .
-    op _.+_ : Scalar Scalar -> Scalar [comm assoc prec 33] .
-    op (_)^* : Scalar -> Scalar [prec 30] .
+    op _.*_ : Complex Complex -> Complex [comm assoc prec 32] .
+    op _./_ : Complex Complex -> Complex [prec 31] .
+    op _.+_ : Complex Complex -> Complex [comm assoc prec 33] .
+    op (_)^* : Complex -> Complex [prec 30] .
 
     --- comparative operators
-    op _.>_ : Scalar Scalar -> Bool .
-    op _.>=_ : Scalar Scalar -> Bool .
-    op _.<_ : Scalar Scalar -> Bool .
-    op _.<=_ : Scalar Scalar -> Bool .
+    op _.>_ : Complex Complex -> Bool .
+    op _.>=_ : Complex Complex -> Bool .
+    op _.<_ : Complex Complex -> Bool .
+    op _.<=_ : Complex Complex -> Bool .
 
     --- error scalar
-    op errS : -> Scalar .
+    op errC : -> Complex .
 
     --- some functions
-    op Sqrt : Scalar -> Scalar .
-    op Abs : Scalar -> Scalar .
-    op Pow : Scalar Rat -> Scalar .
+    op Sqrt : Complex -> Complex .
+    op Abs : Complex -> Complex .
+    op Pow : Complex Rat -> Complex .
 
     vars R R1 R2 : Rat .
-    vars S S1 S2 S3 S4 : Scalar .
+    vars C C1 C2 C3 C4 : Complex .
     var N : Nat .
 
     --- imaginary properties
     eq i .* i = -1 .
     eq Abs(i) = 1 .
     --- absolute values of a postive number is a positive number
-    eq Abs((Abs(S))) = Abs(S) .
-    eq Abs((Pow(Abs(S), N))) = Pow(Abs(S), N) .
+    eq Abs((Abs(C))) = Abs(C) .
+    eq Abs((Pow(Abs(C), N))) = Pow(Abs(C), N) .
     eq Abs(R) = abs(R) .
 
     --- Pow properties
@@ -53,63 +53,63 @@ fmod SCALAR is
     eq R1 .>= R2 = R1 >= R2 .
 
     --- c . c* = |c|^2
-    eq S .* (S)^* = Pow(Abs(S), 2) .
+    eq C .* (C)^* = Pow(Abs(C), 2) .
 
     --- distributive properties
-    eq S1 .* (S2 .+ S3) = S1 .* S2 .+ S1 .* S3 .
+    eq C1 .* (C2 .+ C3) = C1 .* C2 .+ C1 .* C3 .
 
-    --- constructing normal form: R .* S
-    ceq (S .* R1 .+ S .* R2) = S .* (R1 .+ R2) if not S :: Rat .
-    ceq S .+ R .* S = S .* (R .+ 1) if not S :: Rat .
-    ceq S .+ S = S .* 2 if not S :: Rat .
+    --- constructing normal form: R .* C
+    ceq (C .* R1 .+ C .* R2) = C .* (R1 .+ R2) if not C :: Rat .
+    ceq C .+ R .* C = C .* (R .+ 1) if not C :: Rat .
+    ceq C .+ C = C .* 2 if not C :: Rat .
 
-    --- constructing normal form: S1 .* (1 ./ S2)
-    ceq S1 ./ S2 = S1 .* (1 ./ S2) if not S1 :: Rat .
-    ceq R ./ S = R .* (1 ./ S) if not S :: Rat /\ R =/= 1 .
+    --- constructing normal form: C1 .* (1 ./ C2)
+    ceq C1 ./ C2 = C1 .* (1 ./ C2) if not C1 :: Rat .
+    ceq R ./ C = R .* (1 ./ C) if not C :: Rat /\ R =/= 1 .
 
     --- multiplicative properties
-    eq S .* 1 = S .
-    eq S .* 0 = 0 .
-    ceq S .* (1 ./ S) = 1 if not S :: Rat .
-    ceq (1 ./ S1) .* (1 ./ S2) = 1 ./ (S1 .* S2)
-    if not S1 :: Rat /\ not S2 :: Rat .
-    ceq S1 .* (1 ./ (S1 .* S2)) = 1 ./ S2
-    if not S1 :: Rat /\ not S2 :: Rat .
+    eq C .* 1 = C .
+    eq C .* 0 = 0 .
+    ceq C .* (1 ./ C) = 1 if not C :: Rat .
+    ceq (1 ./ C1) .* (1 ./ C2) = 1 ./ (C1 .* C2)
+    if not C1 :: Rat /\ not C2 :: Rat .
+    ceq C1 .* (1 ./ (C1 .* C2)) = 1 ./ C2
+    if not C1 :: Rat /\ not C2 :: Rat .
 
     --- additive properties
-    eq S .+ 0 = S .
+    eq C .+ 0 = C .
 
     --- fraction properties
-    eq 0 ./ S = 0 .
-    eq S ./ 1 = S .
-    ceq S ./ 0 = errS if S =/= 0 .
-    eq 1 ./ (1 ./ S) =  S .
-    eq 1 ./ (S1 .* (1 ./ S2)) =  S2 .* (1 ./ S1) .
-    eq 1 ./ (S .* (R1 / R2)) =  (R2 / R1) .* (1 ./ S) .
+    eq 0 ./ C = 0 .
+    eq C ./ 1 = C .
+    ceq C ./ 0 = errC if C =/= 0 .
+    eq 1 ./ (1 ./ C) =  C .
+    eq 1 ./ (C1 .* (1 ./ C2)) =  C2 .* (1 ./ C1) .
+    eq 1 ./ (C .* (R1 / R2)) =  (R2 / R1) .* (1 ./ C) .
 
     --- Sqrt calculation
     eq Sqrt(- N) = i .* N .
     eq Sqrt(1) = 1 .
     eq Sqrt(0) = 0 .
-    eq Sqrt(S) .* Sqrt(S) = S .
+    eq Sqrt(C) .* Sqrt(C) = C .
     eq Sqrt(R1 / R2) = Sqrt(R1) .* (1 ./ Sqrt(R2)) .
-    ceq Sqrt(1 ./ S) = 1 ./ Sqrt(S) if not S :: Rat .
-    ceq Sqrt(S1 .* S2) = Sqrt(S1) .* Sqrt(S2) if not S1 :: Rat or-else not S2 :: Rat .
-    eq Sqrt(S) .* (R ./ S) = R .* (1 ./ Sqrt(S)) .
-    eq Sqrt(S1) .* (S2 / S1) = S2 .* (1 ./ Sqrt(S1)) .
-    eq Sqrt(Pow(Abs(S), 2)) = Abs(S) .
-    eq Sqrt(Pow(Pow(S, 2), 2)) = Pow(S, 2) .
+    ceq Sqrt(1 ./ C) = 1 ./ Sqrt(C) if not C :: Rat .
+    ceq Sqrt(C1 .* C2) = Sqrt(C1) .* Sqrt(C2) if not C1 :: Rat or-else not C2 :: Rat .
+    eq Sqrt(C) .* (R ./ C) = R .* (1 ./ Sqrt(C)) .
+    eq Sqrt(C1) .* (C2 / C1) = C2 .* (1 ./ Sqrt(C1)) .
+    eq Sqrt(Pow(Abs(C), 2)) = Abs(C) .
+    eq Sqrt(Pow(Pow(C, 2), 2)) = Pow(C, 2) .
 
     --- transpose of Sqrt
     eq (Sqrt(R))^* = Sqrt(R) .
-    eq (S1 .* S2)^* = (S1)^* .* (S2)^* .
-    eq (S1 ./ S2)^* = (S1)^* ./ (S2)^* .
-    eq (S1 .+ S2)^* = (S1)^* .+ (S2)^* .
+    eq (C1 .* C2)^* = (C1)^* .* (C2)^* .
+    eq (C1 ./ C2)^* = (C1)^* ./ (C2)^* .
+    eq (C1 .+ C2)^* = (C1)^* .+ (C2)^* .
     eq (R)^* = R .
 endfm
 
 fmod DIRAC is
-    pr SCALAR .
+    pr COMPLEX .
     sorts Ket Bra .
 
     ops |0> |1> : -> Ket [ctor] .
@@ -132,8 +132,8 @@ fmod MATRIX is
     --- error matrix
     op errM : -> Matrix [ctor] .
     --- scalar multiplication with matrix
-    op _._ : Scalar Vector -> Vector [prec 31] .
-    op _._ : Scalar Matrix -> Matrix [prec 31] .
+    op _._ : Complex Vector -> Vector [prec 31] .
+    op _._ : Complex Matrix -> Matrix [prec 31] .
     --- matrix addition
     op _+_ : Vector Vector -> Vector [comm assoc prec 33] .
     op _+_ : Matrix Matrix -> Matrix [comm assoc prec 33] .
@@ -146,11 +146,11 @@ fmod MATRIX is
     --- dagger
     op (_)^+ : Matrix -> Matrix [prec 30] .
     --- scalr product
-    op SP(_,_) : Vector Vector -> Scalar .
+    op SP(_,_) : Vector Vector -> Complex .
 
     vars M M1 M2 M3 M4 : Matrix .
     vars V V1 V2 V3 : Vector .
-    vars S S1 S2 : Scalar .
+    vars C C1 C2 : Complex .
     vars K1 K2 : Ket .
     vars Bra : Bra .
 
@@ -161,8 +161,8 @@ fmod MATRIX is
     eq SP(|0>, |1>) = 0 .
     eq SP(|1>, |0>) = 0 .
     eq SP(|1>, |1>) = 1 .
-    eq SP(S1 . V1, V2) = (S1)^* .* SP(V1, V2) .
-    eq SP(V1, S2 . V2) = S2 .* SP(V1, V2) .
+    eq SP(C1 . V1, V2) = (C1)^* .* SP(V1, V2) .
+    eq SP(V1, C2 . V2) = C2 .* SP(V1, V2) .
     eq SP(V1 + V2, V3) = SP(V1, V3) .+ SP(V2, V3) .
     eq SP(V1, V2 + V3) = SP(V1, V2) .+ SP(V1, V3) .
     eq SP(K1 (x) V1, K2 (x) V2) = SP(K1, K2) .* SP(V1, V2) .
@@ -170,7 +170,7 @@ fmod MATRIX is
 
     --- zero vector
     eq [scalar-O1] : 0 . V = O .
-    eq [scalar-O2] : S . O = O .
+    eq [scalar-O2] : C . O = O .
     eq [add-O1] : O + V = V .
     eq [mul-O1] : M x O = O .
     eq [mul-O2] : mO x V = O .
@@ -179,7 +179,7 @@ fmod MATRIX is
 
     --- zero matrix
     eq [scalar-mO1] : 0 . M = mO .
-    eq [scalar-mO2] : S . mO = mO .
+    eq [scalar-mO2] : C . mO = mO .
     eq [add-mO1] : M + mO = M .
     eq [mul-mO1] : M x mO = mO .
     eq [mul-mO2] : mO x M = mO .
@@ -192,7 +192,7 @@ fmod MATRIX is
 
     --- nil matrix
     --- [todo] remove nil matrix
-    eq [nil-M1] : S . nil = nil .
+    eq [nil-M1] : C . nil = nil .
     eq [nil-M2] : M + nil = M .
     eq [nil-M3] : nil (x) M = M .
     eq [nil-M4] : M (x) nil = M .
@@ -211,7 +211,7 @@ fmod MATRIX is
     eq [dagger-V1] : (O)^+ = O .
     eq [dagger-V2] : (|0>)^+ = <0| .
     eq [dagger-V3] : (|1>)^+ = <1| .
-    eq [dagger-V4] : (S . V)^+ = ((S)^*) . (V)^+ .
+    eq [dagger-V4] : (C . V)^+ = ((C)^*) . (V)^+ .
     eq [dagger-V5] : (V1 + V2)^+ = (V1)^+ + (V2)^+ .
     eq [dagger-V6] : (V1 (x) V2)^+ = (V1)^+ (x) (V2)^+ .
     eq [dagger-V7] : ((V)^+)^+ = V .
@@ -220,7 +220,7 @@ fmod MATRIX is
     eq [dagger-M2] : (I)^+ = I .
     eq [dagger-M3] : (<0|)^+ = |0> .
     eq [dagger-M4] : (<1|)^+ = |1> .
-    eq [dagger-M5] : (S . M)^+ = ((S)^*) . (M)^+ .
+    eq [dagger-M5] : (C . M)^+ = ((C)^*) . (M)^+ .
     eq [dagger-M6] : (M1 + M2)^+ = (M1)^+ + (M2)^+ .
     eq [dagger-M7] : (M1 x M2)^+ = (M2)^+ x (M1)^+ .
     eq [dagger-M8] : (M1 (x) M2)^+ = (M1)^+ (x) (M2)^+ .
@@ -235,37 +235,37 @@ fmod MATRIX is
 
     --- scalar normal forms
     eq [scalar-V1] : 1 . V = V .
-    eq [scalar-V2] : S1 . (S2 . V) = (S1 .* S2) . V .
-    eq [scalar-V3] : S . (V1 + V2) = S . V1 + S . V2 .
+    eq [scalar-V2] : C1 . (C2 . V) = (C1 .* C2) . V .
+    eq [scalar-V3] : C . (V1 + V2) = C . V1 + C . V2 .
 
     eq [scalar-M1] : 1 . M = M .
-    eq [scalar-M2] : S1 . (S2 . M) = (S1 .* S2) . M .
-    eq [scalar-M3] : S . (M1 + M2) = S . M1 + S . M2 .
+    eq [scalar-M2] : C1 . (C2 . M) = (C1 .* C2) . M .
+    eq [scalar-M3] : C . (M1 + M2) = C . M1 + C . M2 .
 
     --- additive normal forms
     eq [add-V1] : V + V = 2 . V .
-    eq [add-V2] : (S . V) + V = (S .+ 1) . V .
-    eq [add-V3] : (S1 . V) + (S2 . V) = (S1 .+ S2) . V .
+    eq [add-V2] : (C . V) + V = (C .+ 1) . V .
+    eq [add-V3] : (C1 . V) + (C2 . V) = (C1 .+ C2) . V .
 
     eq [add-M4] : M + M = 2 . M .
-    eq [add-M3] : (S . M) + M = (S .+ 1) . M .
-    eq [add-M2] : (S1 . M) + (S2 . M) = (S1 .+ S2) . M .
+    eq [add-M3] : (C . M) + M = (C .+ 1) . M .
+    eq [add-M2] : (C1 . M) + (C2 . M) = (C1 .+ C2) . M .
     
     --- multiplicative normal forms
-    eq [mul-MV1] : (S . M) x V = S . (M x V) .
-    eq [mul-MV2] : M x (S . V) = S . (M x V) .
+    eq [mul-MV1] : (C . M) x V = C . (M x V) .
+    eq [mul-MV2] : M x (C . V) = C . (M x V) .
     eq [mul-MV3] : (M1 (x) M2) x (V1 (x) V2) = (M1 x V1) (x) (M2 x V2) .
 
-    eq [mul-MM1] : (S . M1) x M2 = S . (M1 x M2) .
-    eq [mul-MM2] : M1 x (S . M2) = S . (M1 x M2) .
+    eq [mul-MM1] : (C . M1) x M2 = C . (M1 x M2) .
+    eq [mul-MM2] : M1 x (C . M2) = C . (M1 x M2) .
     eq [mul-MM3] : (M1 (x) M2) x (M3 (x) M4) = (M1 x M3) (x) (M2 x M4) .
     
     --- tensor product normal forms
-    eq [tensor-V1] : (S . V1) (x) V2 = S . (V1 (x) V2) .
-    eq [tensor-V2] : V1 (x) (S . V2) = S . (V1 (x) V2) .
+    eq [tensor-V1] : (C . V1) (x) V2 = C . (V1 (x) V2) .
+    eq [tensor-V2] : V1 (x) (C . V2) = C . (V1 (x) V2) .
     
-    eq [tensor-M1] : (S . M1) (x) M2 = S . (M1 (x) M2) .
-    eq [tensor-M2] : M1 (x) (S . M2) = S . (M1 (x) M2) .
+    eq [tensor-M1] : (C . M1) (x) M2 = C . (M1 (x) M2) .
+    eq [tensor-M2] : M1 (x) (C . M2) = C . (M1 (x) M2) .
     
     --- tensor distributes over addition
     eq [dist-tensor-V1] : V1 (x) (V2 + V3) = V1 (x) V2 + V1 (x) V3 .

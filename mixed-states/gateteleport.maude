@@ -3,15 +3,15 @@ load quantum-circuits.maude
 mod GATE-TELEPORT is
     pr CIRCUIT .
 
-    var S : Scalar .
+    var C : Complex .
 
     --- defining initial states
-    ops a b c d : -> Scalar .
+    ops a b c d : -> Complex .
     eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
-    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+    eq C .* Pow(Abs(a), 2) .+ C .* Pow(Abs(b), 2) = C .
 
     eq Pow(Abs(c), 2) .+ Pow(Abs(d), 2) = 1 .
-    eq S .* Pow(Abs(c), 2) .+ S .* Pow(Abs(d), 2) = S .
+    eq C .* Pow(Abs(c), 2) .+ C .* Pow(Abs(d), 2) = C .
 
     ops PSI PHI : -> Vector .
     ops pPSI pPHI : -> Matrix [memo] .
@@ -58,7 +58,7 @@ mod GATE-TELEPORT-PREDS is
     var OCs : Soup{OComp} .
     var PROP : Prop .
     var MS : MixedState .
-    var Prob : Scalar .
+    var Prob : Complex .
     var N : Nat .
 
     op isSuccess : -> Prop .

@@ -4,7 +4,7 @@ fmod STATES-AND-PROB is
     pr MATRIX .
 
     sort State&Prob .
-    op {_,_} : Vector Scalar -> State&Prob . 
+    op {_,_} : Vector Complex -> State&Prob . 
 endfm
 
 view State&Prob from TRIV to STATES-AND-PROB is
@@ -91,7 +91,7 @@ fmod QUANTUM-GATES is
     pr MATRIX .
 
     var BL : Bool .
-    var S : Scalar .
+    var C : Complex .
     vars A : Action .
     vars AL AL' : ActionList .
     vars N N' N1 N2 N3 N4 : Nat .
@@ -253,7 +253,7 @@ fmod SYMBOLIC-REASONING is
     vars M U P : Matrix .
     vars MS MS' : MixedState .
     vars V V' : Vector .
-    vars S Prob : Scalar .
+    vars C Prob : Complex .
     vars QS : QState .
     vars ES : Ensemble .
     vars A : Action .
@@ -275,18 +275,18 @@ fmod SYMBOLIC-REASONING is
     --- the number of qubits
     op findN : Vector -> Nat .
     eq findN(V + V') = findN(V) .
-    eq findN(S . V) = findN(V) .
+    eq findN(C . V) = findN(V) .
     eq findN(K (x) V) = 1 + findN(V) .
     eq findN(K) = 1 .
 
     op findN : Ensemble -> Nat .
-    eq findN(({V, S}, ES)) = findN(V) .
+    eq findN(({V, C}, ES)) = findN(V) .
     eq findN(ES) = 0 [owise] .
 
     --- convert to mixed states
     op convert : Ensemble -> MixedState .
-    ceq convert(({V, S}, ES)) = M + convert(ES) 
-    if M := S . (V x (V)^+) .
+    ceq convert(({V, C}, ES)) = M + convert(ES) 
+    if M := C . (V x (V)^+) .
     eq convert(empty) = nil .
 
     --- initialize
@@ -294,18 +294,18 @@ fmod SYMBOLIC-REASONING is
     eq initialize(ES) = (mixedState: convert(ES)) (#qubits: findN(ES)) .
 
     --- the trace of mixed states
-    op tr : QState -> Scalar .
-    op tr : MixedState Nat -> Scalar .
+    op tr : QState -> Complex .
+    op tr : MixedState Nat -> Complex .
 
     eq tr((mixedState: MS) (#qubits: N) QS) = tr(MS, N) .
-    op tr : MixedState Nat Nat -> Scalar .
+    op tr : MixedState Nat Nat -> Complex .
     eq tr(MS, N) = tr(MS, N, 2 ^ N) .
     eq tr(MS, N1, 0) = 0 .
-    ceq tr(MS, N1, N2) = S .+ tr(MS, N1, sd(N2, 1))
+    ceq tr(MS, N1, N2) = C .+ tr(MS, N1, sd(N2, 1))
     if N2 > 0 
     /\ V := basis(N2 - 1, N1)
-    /\ S := SP(V, MS x V) 
-    [print "N1 = " N1 "\nN2 = " N2 "\nV = " V "\nS = " S]
+    /\ C := SP(V, MS x V) 
+    [print "N1 = " N1 "\nN2 = " N2 "\nV = " V "\nS = " C]
     .
     
     --- the partial trace of mixed states
@@ -339,23 +339,23 @@ fmod SYMBOLIC-REASONING is
     --- applying measurement
     --- measurement
     sort MixedStateProb .
-    op {mState:_, prob:_} : MixedState Scalar -> MixedStateProb .
+    op {mState:_, prob:_} : MixedState Complex -> MixedStateProb .
     op getState : MixedStateProb -> MixedState .
-    op getProb : MixedStateProb -> Scalar .
+    op getProb : MixedStateProb -> Complex .
     eq getState({mState: MS, prob: Prob}) = MS .
     eq getProb({mState: MS, prob: Prob}) = Prob .
 
     op measure : QState Matrix Nat -> QState .
     ceq measure((mixedState: MS) (#qubits: N) QS, P, N') = (mixedState: MS') (#qubits: N) QS
     if M := buildGate1(N', N, P)
-    /\ S := tr((M)^+ x M x MS, N)
-    /\ MS' := (1 ./ S) . (M x MS x (M)^+) .
+    /\ C := tr((M)^+ x M x MS, N)
+    /\ MS' := (1 ./ C) . (M x MS x (M)^+) .
 
     op measure : MixedState Nat Matrix Nat -> MixedStateProb .
-    ceq measure(MS, N, P, N') = {mState: MS', prob: S}
+    ceq measure(MS, N, P, N') = {mState: MS', prob: C}
     if M := buildGate1(N', N, P)
-    /\ S := tr((M)^+ x M x MS, N)
-    /\ MS' := (1 ./ S) . (M x MS x (M)^+) .
+    /\ C := tr((M)^+ x M x MS, N)
+    /\ MS' := (1 ./ C) . (M x MS x (M)^+) .
 endfm
 
 --- in debug.maude .

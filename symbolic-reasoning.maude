@@ -30,7 +30,7 @@ fmod SYMBOLIC-REASONING is
     vars M M1 M2 M3 M4 P : Matrix .
     vars NL NL1 NL2 NL3 NL4 : NatList .
     var QS : Qubit .
-    vars S S1 S2 Prob : Scalar .
+    vars C C1 C2 Prob : Complex .
     vars Ket Ket1 Ket2 : Ket .
     vars V V1 V2 V3 : Vector .
 
@@ -57,6 +57,16 @@ fmod SYMBOLIC-REASONING is
     op _.Z(_) : Qubit Nat -> Qubit .
     ceq ((q[NL1 N NL2]: V) QS).Z(N) = (q[NL1 N NL2]: M x V) QS
     if M := I[size(NL1)] (x) Z (x) I[size(NL2)] .
+
+    --- applying S gate
+    op _.S(_) : Qubit Nat -> Qubit .
+    ceq ((q[NL1 N NL2]: V) QS).S(N) = (q[NL1 N NL2]: M x V) QS
+    if M := I[size(NL1)] (x) S (x) I[size(NL2)] .
+
+    --- applying T gate
+    op _.T(_) : Qubit Nat -> Qubit .
+    ceq ((q[NL1 N NL2]: V) QS).T(N) = (q[NL1 N NL2]: M x V) QS
+    if M := I[size(NL1)] (x) T (x) I[size(NL2)] .
 
     --- applying CX gate
     op _.CX(_,_) : Qubit Nat Nat -> Qubit .
@@ -112,9 +122,9 @@ fmod SYMBOLIC-REASONING is
 
     --- measurement
     sort StateProb .
-    op {qstate:_, prob:_} : Qubit Scalar -> StateProb .
+    op {qstate:_, prob:_} : Qubit Complex -> StateProb .
     op getState : StateProb -> Qubit .
-    op getProb : StateProb -> Scalar .
+    op getProb : StateProb -> Complex .
     eq getState({qstate: QS, prob: Prob}) = QS .
     eq getProb({qstate: QS, prob: Prob}) = Prob .
 
@@ -169,14 +179,14 @@ fmod SYMBOLIC-REASONING is
 
     op simplifyEPR* : Qubit -> Qubit .
     --- case 1
-    eq simplifyEPR*((q[N1 N2 N3 N4]: S . |0>(x)|0>(x)|0>(x)|0> + S . |0>(x)|1>(x)|1>(x)|0> +
-                                     S . |1>(x)|0>(x)|0>(x)|1> + S . |1>(x)|1>(x)|1>(x)|1>))
-    = (q[N1 N4]: Sqrt(S) . (|0>(x)|0> + |1>(x) |1>)) (q[N2 N3]: Sqrt(S) . (|0>(x)|0> + |1>(x) |1>)) .
+    eq simplifyEPR*((q[N1 N2 N3 N4]: C . |0>(x)|0>(x)|0>(x)|0> + C . |0>(x)|1>(x)|1>(x)|0> +
+                                     C . |1>(x)|0>(x)|0>(x)|1> + C . |1>(x)|1>(x)|1>(x)|1>))
+    = (q[N1 N4]: Sqrt(C) . (|0>(x)|0> + |1>(x) |1>)) (q[N2 N3]: Sqrt(C) . (|0>(x)|0> + |1>(x) |1>)) .
     --- case 2
-    ceq simplifyEPR*((q[N1 N2 N3 N4]: S1 . |0>(x)|0>(x)|0>(x)|0> + S1 . |0>(x)|1>(x)|1>(x)|0> +
-                                     S2 . |1>(x)|0>(x)|0>(x)|1> + S2 . |1>(x)|1>(x)|1>(x)|1>))
-    = (q[N1 N4]: Sqrt(S1) . (|0>(x)|0> + (-1) . |1>(x) |1>)) (q[N2 N3]: Sqrt(S2) . (|0>(x)|0> + |1>(x) |1>))
-    if S1 == (-1) .* S2 .
+    ceq simplifyEPR*((q[N1 N2 N3 N4]: C1 . |0>(x)|0>(x)|0>(x)|0> + C1 . |0>(x)|1>(x)|1>(x)|0> +
+                                     C2 . |1>(x)|0>(x)|0>(x)|1> + C2 . |1>(x)|1>(x)|1>(x)|1>))
+    = (q[N1 N4]: Sqrt(C1) . (|0>(x)|0> + (-1) . |1>(x) |1>)) (q[N2 N3]: Sqrt(C2) . (|0>(x)|0> + |1>(x) |1>))
+    if C1 == (-1) .* C2 .
     --- otherwise
     eq simplifyEPR*(QS) = QS [owise] .
 
@@ -190,8 +200,8 @@ fmod SYMBOLIC-REASONING is
     eq firstKetAt((q[NL1 N NL2]: M), N) = firstKetAt*(NL1 N NL2, N, M) .
 
     op firstKetAt* : NatList Nat Matrix -> Ket .
-    eq firstKetAt*(NL, N, S . M) = firstKetAt**(NL, N, M) .
-    eq firstKetAt*(NL, N, S . M1 + M2) = firstKetAt**(NL, N, M1) .
+    eq firstKetAt*(NL, N, C . M) = firstKetAt**(NL, N, M) .
+    eq firstKetAt*(NL, N, C . M1 + M2) = firstKetAt**(NL, N, M1) .
     eq firstKetAt*(NL, N, M) = firstKetAt**(NL, N, M) [owise] .
 
     op firstKetAt** : NatList Nat Matrix -> Ket .
@@ -203,8 +213,8 @@ fmod SYMBOLIC-REASONING is
     eq sameKet?((q[NL1 N NL2]: M), N, Ket) = sameKet?*(NL1 N NL2, N, M, Ket) .
 
     op sameKet?* : NatList Nat Matrix Ket -> Bool .
-    eq sameKet?*(NL, N, S . M, Ket) = sameKet?*(NL, N, M, Ket) .
-    eq sameKet?*(NL, N, S . M1 + M2, Ket) = sameKet?*(NL, N, S . M1, Ket) and sameKet?*(NL, N, M2, Ket) .
+    eq sameKet?*(NL, N, C . M, Ket) = sameKet?*(NL, N, M, Ket) .
+    eq sameKet?*(NL, N, C . M1 + M2, Ket) = sameKet?*(NL, N, C . M1, Ket) and sameKet?*(NL, N, M2, Ket) .
     eq sameKet?*(NL, N, M, Ket) = sameKet?**(NL, N, M, Ket) [owise] .
 
     op sameKet?** : NatList Nat Matrix Ket -> Bool .
@@ -218,8 +228,8 @@ fmod SYMBOLIC-REASONING is
 
     --- remove qubit at a index after a measurement
     op rmQubitAt : NatList Nat Matrix -> Matrix .
-    eq rmQubitAt(NL, N, S . M) = S . rmQubitAt(NL, N, M) .
-    eq rmQubitAt(NL, N, S . M1 + M2) = rmQubitAt(NL, N, S . M1) + rmQubitAt(NL, N, M2) .
+    eq rmQubitAt(NL, N, C . M) = C . rmQubitAt(NL, N, M) .
+    eq rmQubitAt(NL, N, C . M1 + M2) = rmQubitAt(NL, N, C . M1) + rmQubitAt(NL, N, M2) .
     eq rmQubitAt(NL, N, M) = rmQubitAt*(NL, N, M) [owise] .
 
     op rmQubitAt* : NatList Nat Matrix -> Matrix .

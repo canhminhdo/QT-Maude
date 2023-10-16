@@ -37,7 +37,7 @@ mod ENTAGLE-SWAP-PREDS is
     var OCs : Soup{OComp} .
     var PROP : Prop .
     var MS : MixedState .
-    var Prob : Scalar .
+    var Prob : Complex .
     var N : Nat .
 
     op isSuccess : -> Prop .

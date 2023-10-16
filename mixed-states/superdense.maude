@@ -58,7 +58,7 @@ mod SUPERDENSE-PREDS is
     var OCs : Soup{OComp} .
     var PROP : Prop .
     var MS : MixedState .
-    var Prob : Scalar .
+    var Prob : Complex .
     vars BM : BitMap .
 
     ops isGateI isGateX isGateY isGateZ : -> Prop .
@@ -98,7 +98,7 @@ red modelCheck(init1, gateXProp) .
 red modelCheck(init2, gateYProp) .
 red modelCheck(init3, gateZProp) .
 
---- search in SUPERDENSE : init0 =>* {(mState: MS:MixedState) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}} such that P:Scalar > 0 .
---- search in SUPERDENSE : init1 =>* {(mState: MS:MixedState) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}} such that P:Scalar > 0 .
---- search in SUPERDENSE : init2 =>* {(mState: MS:MixedState) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}} such that P:Scalar > 0 .
---- search in SUPERDENSE : init3 =>* {(mState: MS:MixedState) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}} such that P:Scalar > 0 .
+--- search in SUPERDENSE : init0 =>* {(mState: MS:MixedState) (isEnd: true) (prob: P:Complex) OCs:Soup{OComp}} such that P:Complex > 0 .
+--- search in SUPERDENSE : init1 =>* {(mState: MS:MixedState) (isEnd: true) (prob: P:Complex) OCs:Soup{OComp}} such that P:Complex > 0 .
+--- search in SUPERDENSE : init2 =>* {(mState: MS:MixedState) (isEnd: true) (prob: P:Complex) OCs:Soup{OComp}} such that P:Complex > 0 .
+--- search in SUPERDENSE : init3 =>* {(mState: MS:MixedState) (isEnd: true) (prob: P:Complex) OCs:Soup{OComp}} such that P:Complex > 0 .

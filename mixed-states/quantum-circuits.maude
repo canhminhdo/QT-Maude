@@ -14,7 +14,7 @@ fmod OCOMP is
     op (mState:_) : MixedState -> OComp [ctor] .
     op (#qbits:_) : Nat -> OComp [ctor] .
     op (bits:_) : BitMap -> OComp [ctor] .
-    op (prob:_) :  Scalar -> OComp [ctor] .
+    op (prob:_) :  Complex -> OComp [ctor] .
     op (actions:_) : ActionList -> OComp [ctor] .
     op (isEnd:_) : Bool -> OComp [ctor] .
 endfm
@@ -36,7 +36,7 @@ mod CIRCUIT is
     vars A A' : Action .
     vars OCs : Soup{OComp} .
     vars N N' N1 N2 : Nat .
-    vars Prob Prob' : Scalar .
+    vars Prob Prob' : Complex .
     vars B : Bool .
     vars BM : BitMap .
     vars MS MS' : MixedState .

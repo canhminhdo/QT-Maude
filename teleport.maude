@@ -3,11 +3,11 @@ load quantum-circuits.maude
 mod TELEPORT is
     pr CIRCUIT .
 
-    vars S : Scalar .
+    vars C : Complex .
 
-    ops a b : -> Scalar .
+    ops a b : -> Complex .
     eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
-    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+    eq C .* Pow(Abs(a), 2) .+ C .* Pow(Abs(b), 2) = C .
 
     op initQState : -> Qubit .
     eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) .
@@ -33,7 +33,7 @@ mod TELEPORT-PREDS is
     var OCs : Soup{OComp} .
     var PROP : Prop .
     var Q : Qubit .
-    var Prob : Scalar .
+    var Prob : Complex .
 
     op isSuccess : -> Prop .
     eq {(isEnd: true) (qstate: Q) (prob: Prob) OCs} |= isSuccess
@@ -54,7 +54,7 @@ in debug.maude
 
 red modelCheck(init, teleProp) .
 
-search in TELEPORT : init =>* {(qstate: Q:Qubit) (isEnd: true) (prob: P:Scalar) OCs:Soup{OComp}}
-such that P:Scalar > 0 implies qubitAt(Q:Qubit, 2) == qubitAt(qstate(init), 0) .
+search in TELEPORT : init =>* {(qstate: Q:Qubit) (isEnd: true) (prob: P:Complex) OCs:Soup{OComp}}
+such that P:Complex > 0 implies qubitAt(Q:Qubit, 2) == qubitAt(qstate(init), 0) .
 
 --- red getState(getState((initQState).H(1).CX(1, 2).CX(0, 1).H(0).M(P0, 0)).M(P0, 1)) .

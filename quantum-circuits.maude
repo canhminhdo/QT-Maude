@@ -19,6 +19,8 @@ fmod ACTION is
     op Y`(_`) : Nat -> Action .
     op Z`(_`) : Nat -> Action .
     op H`(_`) : Nat -> Action .
+    op S`(_`) : Nat -> Action .
+    op T`(_`) : Nat -> Action .
     op CX`(_,_`) : Nat Nat -> Action .
     op SWAP`(_,_`) : Nat Nat -> Action .
     op M`(_`) : Nat -> Action .
@@ -52,7 +54,7 @@ fmod OCOMP is
     sort OComp .
     op (qstate:_) : Qubit -> OComp [ctor] .
     op (bits:_) : BitMap -> OComp [ctor] .
-    op (prob:_) :  Scalar -> OComp [ctor] .
+    op (prob:_) :  Complex -> OComp [ctor] .
     op (actions:_) : ActionList -> OComp [ctor] .
     op (isEnd:_) : Bool -> OComp [ctor] .
 endfm
@@ -77,7 +79,7 @@ mod CIRCUIT is
     vars Q Q' QS : Qubit .
     vars OCs : Soup{OComp} .
     vars N N1 N2 : Nat .
-    vars Prob Prob' : Scalar .
+    vars Prob Prob' : Complex .
     vars B : Bool .
     vars BM : BitMap .
 
@@ -99,6 +101,14 @@ mod CIRCUIT is
     crl [H] : {(qstate: Q) (actions: (H(N) AL)) OCs}
     => {(qstate: Q') (actions: AL) OCs}
     if Q' := (Q).H(N) .
+    
+    crl [S] : {(qstate: Q) (actions: (S(N) AL)) OCs}
+    => {(qstate: Q') (actions: AL) OCs}
+    if Q' := (Q).S(N) .
+
+    crl [T] : {(qstate: Q) (actions: (T(N) AL)) OCs}
+    => {(qstate: Q') (actions: AL) OCs}
+    if Q' := (Q).T(N) .
 
     crl [CX] : {(qstate: Q) (actions: (CX(N1, N2) AL)) OCs}
     => {(qstate: Q') (actions: AL) OCs}

@@ -57,7 +57,7 @@ mod NETWORK-CODING-PREDS is
     var OCs : Soup{OComp} .
     var PROP : Prop .
     var Q : Qubit .
-    var Prob : Scalar .
+    var Prob : Complex .
 
     op isSuccess : -> Prop .
     eq {(isEnd: true) (qstate: Q) (prob: Prob) OCs} |= isSuccess
