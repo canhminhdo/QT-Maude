@@ -22,7 +22,12 @@ fmod ACTION is
     op S`(_`) : Nat -> Action .
     op T`(_`) : Nat -> Action .
     op CX`(_,_`) : Nat Nat -> Action .
+    op CY`(_,_`) : Nat Nat -> Action .
+    op CZ`(_,_`) : Nat Nat -> Action .
     op SWAP`(_,_`) : Nat Nat -> Action .
+    op CCX`(_,_,_`) : Nat Nat Nat -> Action .
+    op CCZ`(_,_,_`) : Nat Nat Nat -> Action .
+    op CSWAP`(_,_,_`) : Nat Nat Nat -> Action .
     op M`(_`) : Nat -> Action .
 endfm
 

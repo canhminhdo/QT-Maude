@@ -158,7 +158,7 @@ fmod QUANTUM-GATES is
     /\ M1 := buildGate2(N2, N1, N3, I, B0)
     /\ M2 := buildGate2(N2, N1, N3, Y, B3) .
     --- CZ gate
-    --- CX = B0(x)I + B3(x)Z
+    --- CZ = B0(x)I + B3(x)Z
     --- suppose that N1 < N2
     ceq buildUnitary((CZ(N1, N2)), N3) = M1 + M2
     if N1 < N2
