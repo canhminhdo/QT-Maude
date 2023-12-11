@@ -24,7 +24,7 @@ fmod COMPLEX is
     op errC : -> Complex .
 
     --- some functions
-    op Sqrt : Complex -> Complex .
+    op Sqrt : Complex -> Complex [ctor] .
     op Abs : Complex -> Complex .
     op Pow : Complex Rat -> Complex .
 
@@ -88,7 +88,7 @@ fmod COMPLEX is
     eq 1 ./ (C .* (R1 / R2)) =  (R2 / R1) .* (1 ./ C) .
 
     --- Sqrt calculation
-    eq Sqrt(- N) = i .* N .
+    eq Sqrt(- N) = i .* Sqrt(N) .
     eq Sqrt(1) = 1 .
     eq Sqrt(0) = 0 .
     eq Sqrt(C) .* Sqrt(C) = C .
