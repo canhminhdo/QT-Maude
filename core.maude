@@ -7,26 +7,25 @@ fmod COMPLEX is
 
     --- imaginary unit
     op i : -> Complex [ctor] .
-
-    --- basic operators
-    op _.*_ : Complex Complex -> Complex [comm assoc prec 32] .
-    op _./_ : Complex Complex -> Complex [prec 31] .
-    op _.+_ : Complex Complex -> Complex [comm assoc prec 33] .
-    op (_)^* : Complex -> Complex [prec 30] .
-
-    --- comparative operators
-    op _.>_ : Complex Complex -> Bool .
-    op _.>=_ : Complex Complex -> Bool .
-    op _.<_ : Complex Complex -> Bool .
-    op _.<=_ : Complex Complex -> Bool .
-
     --- error scalar
     op errC : -> Complex [ctor] .
 
+    --- basic operators
+    op _.*_  : Complex Complex -> Complex [comm assoc prec 32] .
+    op _./_  : Complex Complex -> Complex [prec 31] .
+    op _.+_  : Complex Complex -> Complex [comm assoc prec 33] .
+    op (_)^* : Complex -> Complex [prec 30] .
+
+    --- comparative operators
+    op _.>_  : Complex Complex -> Bool .
+    op _.>=_ : Complex Complex -> Bool .
+    op _.<_  : Complex Complex -> Bool .
+    op _.<=_ : Complex Complex -> Bool .
+
     --- some functions
+    op Abs  : Complex -> Complex .
+    op Pow  : Complex Rat -> Complex .
     op Sqrt : Complex -> Complex [ctor] .
-    op Abs : Complex -> Complex .
-    op Pow : Complex Rat -> Complex .
 
     vars R R1 R2 : Rat .
     vars C C1 C2 C3 C4 : Complex .
@@ -48,8 +47,8 @@ fmod COMPLEX is
     eq R1 ./ R2 = R1 / R2 .
     eq R1 .+ R2 = R1 + R2 .
     eq R1 .< R2 = R1 < R2 .
-    eq R1 .<= R2 = R1 <= R2 .
     eq R1 .> R2 = R1 > R2 .
+    eq R1 .<= R2 = R1 <= R2 .
     eq R1 .>= R2 = R1 >= R2 .
 
     --- c . c* = |c|^2
