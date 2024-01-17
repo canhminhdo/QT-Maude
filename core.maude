@@ -21,7 +21,7 @@ fmod COMPLEX is
     op _.<=_ : Complex Complex -> Bool .
 
     --- error scalar
-    op errC : -> Complex .
+    op errC : -> Complex [ctor] .
 
     --- some functions
     op Sqrt : Complex -> Complex [ctor] .
@@ -35,7 +35,7 @@ fmod COMPLEX is
     --- imaginary properties
     eq i .* i = -1 .
     eq Abs(i) = 1 .
-    --- absolute values of a postive number is a positive number
+    --- absolute values of postive numbers are positive numbers
     eq Abs((Abs(C))) = Abs(C) .
     eq Abs((Pow(Abs(C), N))) = Pow(Abs(C), N) .
     eq Abs(R) = abs(R) .
@@ -43,7 +43,7 @@ fmod COMPLEX is
     --- Pow properties
     eq Pow(R1, R2) = (R1)^(R2) .
 
-    --- rational number calculation.
+    --- rational number calculation
     eq R1 .* R2 = R1 * R2 .
     eq R1 ./ R2 = R1 / R2 .
     eq R1 .+ R2 = R1 + R2 .
@@ -79,7 +79,7 @@ fmod COMPLEX is
     --- additive properties
     eq C .+ 0 = C .
 
-    --- fraction properties
+    --- division properties
     eq 0 ./ C = 0 .
     eq C ./ 1 = C .
     ceq C ./ 0 = errC if C =/= 0 .
