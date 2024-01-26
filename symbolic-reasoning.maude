@@ -148,7 +148,7 @@ fmod SYMBOLIC-REASONING is
     --- SWAP = (B0 (x) I + B3 (x) X) x (I (x) B0 + X (x) B3) x (B0 (x) I + B3 (x) X) .
     op _.SWAP(_,_) : Qubit Nat Nat -> Qubit .
     ceq ((q[NL1 N1 NL2]: V1) (q[NL3 N2 NL4]: V2) QS).SWAP(N1, N2)
-    = simplify((q[NL1 N2 NL2 NL3 N1 NL4]: M x V)) QS
+    = simplify((q[NL1 N1 NL2 NL3 N2 NL4]: M x V)) QS
     if V := V1 (x) V2
     /\ M1 := buildGate1(size(NL1), B0, size(NL2)) (x)
              buildGate1(size(NL3), I, size(NL4)) +
@@ -161,7 +161,7 @@ fmod SYMBOLIC-REASONING is
     /\ M := M1 x M2 x M1 .
 
     ceq ((q[NL1 N1 NL2 N2 NL3]: V) QS).SWAP(N1, N2)
-    = simplify((q[NL1 N2 NL2 N1 NL3]: M x V)) QS
+    = simplify((q[NL1 N1 NL2 N2 NL3]: M x V)) QS
     if M1 := buildGate2(size(NL1), B0, size(NL2), I, size(NL3)) +
              buildGate2(size(NL1), B3, size(NL2), X, size(NL3))
     /\ M2 := buildGate2(size(NL1), I, size(NL2), B0, size(NL3)) +
@@ -169,7 +169,7 @@ fmod SYMBOLIC-REASONING is
     /\ M := M1 x M2 x M1 .
 
     ceq ((q[NL1 N2 NL2 N1 NL3]: V) QS).SWAP(N1, N2)
-    = simplify((q[NL1 N1 NL2 N2 NL3]: M x V)) QS
+    = simplify((q[NL1 N2 NL2 N1 NL3]: M x V)) QS
     if M1 := buildGate2(size(NL1), I, size(NL2), B0, size(NL3)) +
              buildGate2(size(NL1), X, size(NL2), B3, size(NL3))
     /\ M2 := buildGate2(size(NL1), B0, size(NL2), I, size(NL3)) +
@@ -413,9 +413,8 @@ fmod SYMBOLIC-REASONING is
     --- suppose that N1 < N2 < N3
     op _.CSWAP(_,_,_) : Qubit Nat Nat Nat -> Qubit .
     ceq ((q[NL1 N1 NL2]: V1) (q[NL3 N2 NL4]: V2) (q[NL5 N3 NL6]: V3) QS).CSWAP(N1, N2, N3)
-    = simplify((q[NL1 N1 NL2 NL3 N3 NL4 NL5 N2 NL6]: M x V)) QS
+    = simplify((q[NL1 N1 NL2 NL3 N2 NL4 NL5 N3 NL6]: M x V)) QS
     if N1 < N2 /\ N2 < N3
-    /\ not sameKet?((q[NL1 N1 NL2]: V1), N1, |0>)
     /\ V := V1 (x) V2 (x) V3
     /\ M1 := buildGate1(size(NL1), B0, size(NL2)) (x)
              buildGate1(size(NL3), I, size(NL4)) (x)
@@ -435,9 +434,8 @@ fmod SYMBOLIC-REASONING is
     /\ M := M1 + M2 + M3 + M4 + M5 .
 
     ceq ((q[NL1 N1 NL2 N2 NL3]: V1) (q[NL4 N3 NL5]: V2) QS).CSWAP(N1, N2, N3)
-    = simplify((q[NL1 N1 NL2 N3 NL3 NL4 N2 NL5]: M x V)) QS
+    = simplify((q[NL1 N1 NL2 N2 NL3 NL4 N3 NL5]: M x V)) QS
     if N1 < N2 /\ N2 < N3
-    /\ not sameKet?((q[NL1 N1 NL2 N2 NL3]: V1), N1, |0>)
     /\ V := V1 (x) V2
     /\ M1 := buildGate2(size(NL1), B0, size(NL2), I, size(NL3)) (x)
              buildGate1(size(NL4), I, size(NL5))
@@ -452,9 +450,8 @@ fmod SYMBOLIC-REASONING is
     /\ M := M1 + M2 + M3 + M4 + M5 .
 
     ceq ((q[NL1 N1 NL2]: V1) (q[NL3 N2 NL4 N3 NL5]: V2) QS).CSWAP(N1, N2, N3)
-    = simplify((q[NL1 N1 NL2 NL3 N3 NL4 N2 NL5]: M x V)) QS
+    = simplify((q[NL1 N1 NL2 NL3 N2 NL4 N3 NL5]: M x V)) QS
     if N1 < N2 /\ N2 < N3
-    /\ not sameKet?((q[NL1 N1 NL2]: V1), N1, |0>)
     /\ V := V1 (x) V2
     /\ M1 := buildGate1(size(NL1), B0, size(NL2)) (x)
              buildGate2(size(NL3), I, size(NL4), I, size(NL5))
@@ -469,9 +466,8 @@ fmod SYMBOLIC-REASONING is
     /\ M := M1 + M2 + M3 + M4 + M5 .
 
     ceq ((q[NL1 N1 NL2 N2 NL3 N3 NL4]: V) QS).CSWAP(N1, N2, N3)
-    = simplify((q[NL1 N1 NL2 N3 NL3 N2 NL4]: M x V)) QS
+    = simplify((q[NL1 N1 NL2 N2 NL3 N3 NL4]: M x V)) QS
     if N1 < N2 /\ N2 < N3
-    /\ not sameKet?((q[NL1 N1 NL2 N2 NL3 N3 NL4]: V), N1, |0>)
     /\ M1 := buildGate3(size(NL1), B0, size(NL2), I,  size(NL3), I,  size(NL4))
     /\ M2 := buildGate3(size(NL1), B3, size(NL2), B0, size(NL3), B0, size(NL4))
     /\ M3 := buildGate3(size(NL1), B3, size(NL2), B1, size(NL3), B2, size(NL4))
@@ -481,9 +477,8 @@ fmod SYMBOLIC-REASONING is
 
     --- suppose that N1 > N2 > N3
     ceq ((q[NL1 N1 NL2]: V1) (q[NL3 N2 NL4]: V2) (q[NL5 N3 NL6]: V3) QS).CSWAP(N1, N2, N3)
-    = simplify((q[NL1 N2 NL2 NL3 N1 NL4 NL5 N3 NL6]: M x V)) QS
+    = simplify((q[NL1 N1 NL2 NL3 N2 NL4 NL5 N3 NL6]: M x V)) QS
     if N1 > N2 /\ N2 > N3
-    /\ not sameKet?((q[NL5 N3 NL6]: V3), N3, |0>)
     /\ V := V1 (x) V2 (x) V3
     /\ M1 := buildGate1(size(NL1), I, size(NL2)) (x)
              buildGate1(size(NL3), I, size(NL4)) (x)
@@ -503,9 +498,8 @@ fmod SYMBOLIC-REASONING is
     /\ M := M1 + M2 + M3 + M4 + M5 .
 
     ceq ((q[NL1 N1 NL2 N2 NL3]: V1) (q[NL4 N3 NL5]: V2) QS).CSWAP(N1, N2, N3)
-    = simplify((q[NL1 N2 NL2 N1 NL3 NL4 N3 NL5]: M x V)) QS
+    = simplify((q[NL1 N1 NL2 N2 NL3 NL4 N3 NL5]: M x V)) QS
     if N1 > N2 /\ N2 > N3
-    /\ not sameKet?((q[NL4 N3 NL5]: V2), N3, |0>)
     /\ V := V1 (x) V2
     /\ M1 := buildGate2(size(NL1), I, size(NL2), I, size(NL3)) (x)
              buildGate1(size(NL4), B0, size(NL5))
@@ -520,9 +514,8 @@ fmod SYMBOLIC-REASONING is
     /\ M := M1 + M2 + M3 + M4 + M5 .
 
     ceq ((q[NL1 N1 NL2]: V1) (q[NL3 N2 NL4 N3 NL5]: V2) QS).CSWAP(N1, N2, N3)
-    = simplify((q[NL1 N2 NL2 NL3 N1 NL4 N3 NL5]: M x V)) QS
+    = simplify((q[NL1 N1 NL2 NL3 N2 NL4 N3 NL5]: M x V)) QS
     if N1 > N2 /\ N2 > N3
-    /\ not sameKet?((q[NL3 N2 NL4 N3 NL5]: V2), N3, |0>)
     /\ V := V1 (x) V2
     /\ M1 := buildGate1(size(NL1), I, size(NL2)) (x)
              buildGate2(size(NL3), I, size(NL4), B0, size(NL5))
@@ -538,9 +531,8 @@ fmod SYMBOLIC-REASONING is
     /\ V' := M x V .
 
     ceq ((q[NL1 N1 NL2 N2 NL3 N3 NL4]: V) QS).CSWAP(N1, N2, N3)
-    = simplify((q[NL1 N2 NL2 N1 NL3 N3 NL4]: M x V)) QS
+    = simplify((q[NL1 N1 NL2 N2 NL3 N3 NL4]: M x V)) QS
     if N1 > N2 /\ N2 > N3
-    /\ not sameKet?((q[NL1 N1 NL2 N2 NL3 N3 NL4]: V), N3, |0>)
     /\ M1 := buildGate3(size(NL1), I,  size(NL2), I,  size(NL3), B0, size(NL4))
     /\ M2 := buildGate3(size(NL1), B0, size(NL2), B0, size(NL3), B3, size(NL4))
     /\ M3 := buildGate3(size(NL1), B2, size(NL2), B1, size(NL3), B3, size(NL4))

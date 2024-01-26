@@ -39,7 +39,7 @@ mod NETWORK-CODING is
             H(4) CX(4, 5) H(6) CX(6, 7)
             H(8) CX(8, 9) H(10) CX(10, 11)
             H(12) CX(12, 13) network-coding
-            SWAP(4, 0) SWAP(4, 1)
+            SWAP(4, 0) SWAP(0, 1)
         ))
         (prob: 1)
         (bits: empty)
@@ -62,7 +62,7 @@ mod NETWORK-CODING-PREDS is
 
     op isSuccess : -> Prop .
     eq {(isEnd: true) (qstate: Q) (prob: Prob) OCs} |= isSuccess
-    = Prob > 0 implies (qubitAt(Q, 0 5) == EPR and qubitAt(Q, 1 4) == EPR) .
+    = Prob > 0 implies (qubitAt(Q, 4 5) == EPR and qubitAt(Q, 0 1) == EPR) .
     eq {OCs} |= PROP = false [owise] .
 endm
 
