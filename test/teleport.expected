@@ -2,25 +2,25 @@
 reduce in TELEPORT-CHECK : modelCheck(init, teleProp) .
 result Bool: true
 ==========================================
-search in TELEPORT : init =>* {OCs:Soup{OComp} qstate: Q:Qubit prob: P:Complex
-    isEnd: true} such that P:Complex > 0 implies qubitAt(Q:Qubit, 2) ==
-    qubitAt(qstate(init), 0) = true .
+search in TELEPORT : init =>* {OCs:Soup{OComp} qstate: Q:Qubit prob: P:Real
+    isEnd: true} such that P:Real > 0 implies qubitAt(Q:Qubit, 2) == qubitAt(
+    qstate(init), 0) = true .
 
 OCs:Soup{OComp} --> bits: (0 |-> 0, 1 |-> 0) actions: nil
 Q:Qubit --> (q[0]: |0>) (q[1]: |0>) q[2]: a . |0> + b . |1>
-P:Complex --> 1/4
+P:Real --> 1/4
 
 OCs:Soup{OComp} --> bits: (0 |-> 0, 1 |-> 1) actions: nil
 Q:Qubit --> (q[0]: |0>) (q[1]: |1>) q[2]: a . |0> + b . |1>
-P:Complex --> 1/4
+P:Real --> 1/4
 
 OCs:Soup{OComp} --> bits: (0 |-> 1, 1 |-> 0) actions: nil
 Q:Qubit --> (q[0]: |1>) (q[1]: |0>) q[2]: a . |0> + b . |1>
-P:Complex --> 1/4
+P:Real --> 1/4
 
 OCs:Soup{OComp} --> bits: (0 |-> 1, 1 |-> 1) actions: nil
 Q:Qubit --> (q[0]: |1>) (q[1]: |1>) q[2]: a . |0> + b . |1>
-P:Complex --> 1/4
+P:Real --> 1/4
 
 No more solutions.
 Bye.

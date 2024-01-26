@@ -17,17 +17,18 @@ fmod COMPLEX is
     op (_)^* : Complex -> Complex [prec 30] .
 
     --- comparative operators
-    op _.>_  : Complex Complex -> Bool .
-    op _.>=_ : Complex Complex -> Bool .
-    op _.<_  : Complex Complex -> Bool .
-    op _.<=_ : Complex Complex -> Bool .
+    op _.>_  : Real Real -> Bool .
+    op _.>=_ : Real Real -> Bool .
+    op _.<_  : Real Real -> Bool .
+    op _.<=_ : Real Real -> Bool .
 
     --- some functions
-    op Abs  : Complex -> Complex .
+    op Abs  : Complex -> Real .
     op Pow  : Complex Rat -> Complex .
     op Sqrt : Complex -> Complex [ctor] .
 
     vars R R1 R2 : Rat .
+    vars PR PR' : PosRat .
     vars C C1 C2 C3 C4 : Complex .
     var N : Nat .
 
@@ -87,20 +88,15 @@ fmod COMPLEX is
     eq 1 ./ (C .* (R1 / R2)) =  (R2 / R1) .* (1 ./ C) .
 
     --- Sqrt calculation
-    eq Sqrt(- N) = i .* Sqrt(N) .
+    eq Sqrt(- 1) = i .
     eq Sqrt(1) = 1 .
     eq Sqrt(0) = 0 .
-    eq Sqrt(C) .* Sqrt(C) = C .
-    eq Sqrt(R1 / R2) = Sqrt(R1) .* (1 ./ Sqrt(R2)) .
-    ceq Sqrt(1 ./ C) = 1 ./ Sqrt(C) if not C :: Rat .
-    ceq Sqrt(C1 .* C2) = Sqrt(C1) .* Sqrt(C2) if not C1 :: Rat or-else not C2 :: Rat .
-    eq Sqrt(C) .* (R ./ C) = R .* (1 ./ Sqrt(C)) .
-    eq Sqrt(C1) .* (C2 / C1) = C2 .* (1 ./ Sqrt(C1)) .
-    eq Sqrt(Pow(Abs(C), 2)) = Abs(C) .
-    eq Sqrt(Pow(Pow(C, 2), 2)) = Pow(C, 2) .
+    eq Sqrt(PR) .* Sqrt(PR) = PR .
+    eq Sqrt(PR / PR') = Sqrt(PR) .* (1 ./ Sqrt(PR')) .
+    eq Sqrt(PR) .* (PR' / PR) = PR' .* (1 ./ Sqrt(PR)) .
 
     --- transpose of Sqrt
-    eq (Sqrt(R))^* = Sqrt(R) .
+    eq (Sqrt(PR))^* = Sqrt(PR) .
     eq (C1 .* C2)^* = (C1)^* .* (C2)^* .
     eq (C1 ./ C2)^* = (C1)^* ./ (C2)^* .
     eq (C1 .+ C2)^* = (C1)^* .+ (C2)^* .

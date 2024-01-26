@@ -42,7 +42,7 @@ mod TWO-TELEPORT-PREDS is
     var OCs : Soup{OComp} .
     var PROP : Prop .
     var Q : Qubit .
-    var Prob : Complex .
+    var Prob : Real .
 
     op isSuccess : -> Prop .
     eq {(isEnd: true) (qstate: Q) (prob: Prob) OCs} |= isSuccess
