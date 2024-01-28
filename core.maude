@@ -7,8 +7,6 @@ fmod COMPLEX is
 
     --- imaginary unit
     op i : -> Complex [ctor] .
-    --- error scalar
-    op errC : -> [Complex] [ctor] .
 
     --- basic operators
     op _.*_  : Complex Complex -> Complex [comm assoc prec 32] .
@@ -64,17 +62,14 @@ fmod COMPLEX is
     ceq C .+ C = C .* 2 if not C :: Rat .
 
     --- constructing normal form: C1 .* (1 ./ C2)
-    ceq C1 ./ C2 = C1 .* (1 ./ C2) if not C1 :: Rat .
-    ceq R ./ C = R .* (1 ./ C) if not C :: Rat /\ R =/= 1 .
+    ceq C1 ./ C2 = C1 .* (1 ./ C2) if C1 =/= 1 .
 
     --- multiplicative properties
     eq C .* 1 = C .
     eq C .* 0 = 0 .
     ceq C .* (1 ./ C) = 1 if not C :: Rat .
-    ceq (1 ./ C1) .* (1 ./ C2) = 1 ./ (C1 .* C2)
-    if not C1 :: Rat /\ not C2 :: Rat .
-    ceq C1 .* (1 ./ (C1 .* C2)) = 1 ./ C2
-    if not C1 :: Rat /\ not C2 :: Rat .
+    ceq 1 ./ (C1 .* C2) = (1 ./ C1) .* (1 ./ C2)
+    if not C1 :: Rat or-else not C2 :: Rat .
 
     --- additive properties
     eq C .+ 0 = C .
@@ -82,17 +77,15 @@ fmod COMPLEX is
     --- division properties
     eq 0 ./ C = 0 .
     eq C ./ 1 = C .
-    ceq C ./ 0 = errC if C =/= 0 .
-    eq 1 ./ (1 ./ C) =  C .
-    eq 1 ./ (C1 .* (1 ./ C2)) =  C2 .* (1 ./ C1) .
-    eq 1 ./ (C .* (R1 / R2)) =  (R2 / R1) .* (1 ./ C) .
+    ceq 1 ./ (1 ./ C) = C if C =/= 0 .
+    ceq 1 ./ (R1 / R2) = R2 / R1 if R1 =/= 0 /\ R2 =/= 0 .
 
     --- Sqrt calculation
     eq Sqrt(- 1) = i .
     eq Sqrt(1) = 1 .
     eq Sqrt(0) = 0 .
     eq Sqrt(PR) .* Sqrt(PR) = PR .
-    eq Sqrt(PR) .* (1 ./ Sqrt(PR)) = 1 .
+    eq 1 ./ Sqrt(PR) .* 1 ./ Sqrt(PR) = 1 ./ PR .
     eq PR .* (1 ./ Sqrt(PR)) = Sqrt(PR) .
     eq Sqrt(PR / PR') = Sqrt(PR) .* (1 ./ Sqrt(PR')) .
     eq Sqrt(PR) .* (R / PR) = R .* (1 ./ Sqrt(PR)) .
