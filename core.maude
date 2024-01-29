@@ -75,10 +75,7 @@ fmod COMPLEX is
     eq C .+ 0 = C .
 
     --- division properties
-    --- eq 0 ./ C = 0 .
-    --- eq C ./ 1 = C .
     ceq 1 ./ (1 ./ C) = C if C =/= 0 .
-    ceq 1 ./ (R1 / R2) = R2 / R1 if R1 =/= 0 /\ R2 =/= 0 .
 
     --- Sqrt calculation
     eq Sqrt(- 1) = i .
