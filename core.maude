@@ -23,7 +23,7 @@ fmod COMPLEX is
     --- some functions
     op Abs  : Complex -> Real .
     op Pow  : Complex Rat -> Complex .
-    op Sqrt : Complex -> Complex [ctor] .
+    op Sqrt : Complex -> Complex .
 
     vars R R1 R2 : Rat .
     vars PR PR' : PosRat .
