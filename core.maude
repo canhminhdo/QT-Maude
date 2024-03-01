@@ -78,7 +78,6 @@ fmod COMPLEX is
     ceq 1 ./ (1 ./ C) = C if C =/= 0 .
 
     --- Sqrt calculation
-    eq Sqrt(- 1) = i .
     eq Sqrt(1) = 1 .
     eq Sqrt(0) = 0 .
     eq Sqrt(PR) .* Sqrt(PR) = PR .
